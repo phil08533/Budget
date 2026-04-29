@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 const DB_HOST = '127.0.0.1';
 const DB_NAME = 'futureworth';
-const DB_USER = 'root';
-const DB_PASS = '';
+const DB_USER = 'phil';
+const DB_PASS = 'phil';
 
 function db(): PDO
 {
