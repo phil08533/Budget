@@ -1,169 +1,298 @@
 <?php
-require_once 'config.php';
 
-$request_method = $_SERVER['REQUEST_METHOD'];
-$request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$endpoint = basename($request_path);
-$action = $_GET['action'] ?? null;
+declare(strict_types=1);
 
-$user_id = 1; // TODO: Replace with actual session management
+require_once __DIR__ . '/db.php';
 
-try {
-    if ($action === 'add-income' && $request_method === 'POST') {
-        $data = json_decode(file_get_contents('php://input'), true);
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+$action = $_GET['action'] ?? '';
 
-        $stmt = $conn->prepare("INSERT INTO income (user_id, source_name, amount, frequency) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("isds", $user_id, $data['source_name'], $data['amount'], $data['frequency']);
+$demoUserId = 1;
 
-        if ($stmt->execute()) {
-            echo json_encode(['success' => true, 'id' => $conn->insert_id]);
-        } else {
-            throw new Exception("Failed to add income");
+switch ($action) {
+    case 'dashboard':
+        if ($method !== 'GET') {
+            jsonResponse(['error' => 'Method not allowed'], 405);
         }
-    }
-    elseif ($action === 'add-expense' && $request_method === 'POST') {
-        $data = json_decode(file_get_contents('php://input'), true);
+        getDashboard($demoUserId);
+        break;
 
-        $stmt = $conn->prepare("INSERT INTO expenses (user_id, category, amount, date) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("isds", $user_id, $data['category'], $data['amount'], $data['date']);
+    case 'income':
+        match ($method) {
+            'POST' => createIncome($demoUserId),
+            'PUT' => updateIncome($demoUserId),
+            'DELETE' => deleteIncome($demoUserId),
+            default => jsonResponse(['error' => 'Method not allowed'], 405),
+        };
+        break;
 
-        if ($stmt->execute()) {
-            echo json_encode(['success' => true, 'id' => $conn->insert_id]);
-        } else {
-            throw new Exception("Failed to add expense");
+    case 'expense':
+        match ($method) {
+            'POST' => createExpense($demoUserId),
+            'PUT' => updateExpense($demoUserId),
+            'DELETE' => deleteExpense($demoUserId),
+            default => jsonResponse(['error' => 'Method not allowed'], 405),
+        };
+        break;
+
+    case 'simulate':
+        if ($method !== 'POST') {
+            jsonResponse(['error' => 'Method not allowed'], 405);
         }
-    }
-    elseif ($action === 'get-dashboard' && $request_method === 'GET') {
-        // Get income summary
-        $income_query = "SELECT SUM(amount) as total_income FROM income WHERE user_id = ?";
-        $stmt = $conn->prepare($income_query);
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $income_result = $stmt->get_result()->fetch_assoc();
+        simulateScenario();
+        break;
 
-        // Get expense summary
-        $expense_query = "SELECT SUM(amount) as total_expenses FROM expenses WHERE user_id = ? AND MONTH(date) = MONTH(CURDATE()) AND YEAR(date) = YEAR(CURDATE())";
-        $stmt = $conn->prepare($expense_query);
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $expense_result = $stmt->get_result()->fetch_assoc();
+    case 'scenario':
+        match ($method) {
+            'POST' => createScenario($demoUserId),
+            'PUT' => updateScenario($demoUserId),
+            'DELETE' => deleteScenario($demoUserId),
+            default => jsonResponse(['error' => 'Method not allowed'], 405),
+        };
+        break;
 
-        // Get all income entries
-        $income_entries_query = "SELECT income_id, source_name, amount, frequency FROM income WHERE user_id = ? ORDER BY created_at DESC";
-        $stmt = $conn->prepare($income_entries_query);
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $income_entries = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
-        // Get all expense entries
-        $expense_entries_query = "SELECT expense_id, category, amount, date FROM expenses WHERE user_id = ? ORDER BY date DESC";
-        $stmt = $conn->prepare($expense_entries_query);
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $expense_entries = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
-        $monthly_savings = ($income_result['total_income'] ?? 0) - ($expense_result['total_expenses'] ?? 0);
-
-        echo json_encode([
-            'success' => true,
-            'total_income' => $income_result['total_income'] ?? 0,
-            'total_expenses' => $expense_result['total_expenses'] ?? 0,
-            'monthly_savings' => $monthly_savings,
-            'yearly_projection' => $monthly_savings * 12,
-            'income_entries' => $income_entries,
-            'expense_entries' => $expense_entries
-        ]);
-    }
-    elseif ($action === 'delete-income' && $request_method === 'DELETE') {
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        $stmt = $conn->prepare("DELETE FROM income WHERE income_id = ? AND user_id = ?");
-        $stmt->bind_param("ii", $data['income_id'], $user_id);
-
-        if ($stmt->execute()) {
-            echo json_encode(['success' => true]);
-        } else {
-            throw new Exception("Failed to delete income");
-        }
-    }
-    elseif ($action === 'delete-expense' && $request_method === 'DELETE') {
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        $stmt = $conn->prepare("DELETE FROM expenses WHERE expense_id = ? AND user_id = ?");
-        $stmt->bind_param("ii", $data['expense_id'], $user_id);
-
-        if ($stmt->execute()) {
-            echo json_encode(['success' => true]);
-        } else {
-            throw new Exception("Failed to delete expense");
-        }
-    }
-    elseif ($action === 'run-simulation' && $request_method === 'POST') {
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        $monthly_amount = $data['monthly_amount'];
-        $duration_months = $data['duration_months'];
-        $type = $data['type']; // 'save' or 'invest'
-        $return_rate = $data['return_rate'] ?? 7;
-
-        if ($type === 'save') {
-            $total_savings = $monthly_amount * $duration_months;
-            echo json_encode([
-                'success' => true,
-                'type' => 'save',
-                'monthly_amount' => $monthly_amount,
-                'duration_months' => $duration_months,
-                'total_savings' => $total_savings
-            ]);
-        } elseif ($type === 'invest') {
-            // Compound interest formula: FV = PMT * [((1 + r)^n - 1) / r]
-            $monthly_rate = ($return_rate / 100) / 12;
-            $total_value = $monthly_amount * ((pow(1 + $monthly_rate, $duration_months) - 1) / $monthly_rate);
-
-            echo json_encode([
-                'success' => true,
-                'type' => 'invest',
-                'monthly_amount' => $monthly_amount,
-                'duration_months' => $duration_months,
-                'return_rate' => $return_rate,
-                'total_value' => $total_value
-            ]);
-        }
-    }
-    elseif ($action === 'save-scenario' && $request_method === 'POST') {
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        $stmt = $conn->prepare("INSERT INTO scenarios (user_id, type, monthly_amount, duration_months, expected_return_rate) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("isdid", $user_id, $data['type'], $data['monthly_amount'], $data['duration_months'], $data['return_rate']);
-
-        if ($stmt->execute()) {
-            $scenario_id = $conn->insert_id;
-
-            $stmt = $conn->prepare("INSERT INTO budget_scenarios (user_id, scenario_id, saved_name) VALUES (?, ?, ?)");
-            $stmt->bind_param("iis", $user_id, $scenario_id, $data['saved_name']);
-            $stmt->execute();
-
-            echo json_encode(['success' => true, 'id' => $scenario_id]);
-        } else {
-            throw new Exception("Failed to save scenario");
-        }
-    }
-    elseif ($action === 'get-scenarios' && $request_method === 'GET') {
-        $stmt = $conn->prepare("SELECT s.scenario_id, s.type, s.monthly_amount, s.duration_months, s.expected_return_rate, bs.saved_name FROM scenarios s JOIN budget_scenarios bs ON s.scenario_id = bs.scenario_id WHERE s.user_id = ? ORDER BY s.created_at DESC");
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $scenarios = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
-        echo json_encode(['success' => true, 'scenarios' => $scenarios]);
-    }
-    else {
-        http_response_code(404);
-        echo json_encode(['error' => 'Endpoint not found']);
-    }
-} catch (Exception $e) {
-    http_response_code(400);
-    echo json_encode(['error' => $e->getMessage()]);
+    default:
+        jsonResponse(['error' => 'Unknown action'], 404);
 }
 
-$conn->close();
-?>
+function getDashboard(int $userId): void
+{
+    $pdo = db();
+
+    $incomeStmt = $pdo->prepare('SELECT income_id, source_name, amount, frequency FROM income WHERE user_id = ? ORDER BY income_id DESC');
+    $incomeStmt->execute([$userId]);
+    $income = $incomeStmt->fetchAll();
+
+    $expenseStmt = $pdo->prepare('SELECT expense_id, category, amount, date FROM expenses WHERE user_id = ? ORDER BY date DESC, expense_id DESC');
+    $expenseStmt->execute([$userId]);
+    $expenses = $expenseStmt->fetchAll();
+
+    $scenarioStmt = $pdo->prepare(
+        'SELECT s.scenario_id, s.type, s.monthly_amount, s.duration_months, s.expected_return_rate, bs.saved_name
+         FROM scenarios s
+         INNER JOIN budget_scenarios bs ON bs.scenario_id = s.scenario_id
+         WHERE bs.user_id = ?
+         ORDER BY bs.id DESC'
+    );
+    $scenarioStmt->execute([$userId]);
+    $scenarios = $scenarioStmt->fetchAll();
+
+    $incomeTotal = array_reduce($income, fn ($carry, $row) => $carry + (float) $row['amount'], 0.0);
+    $expenseTotal = array_reduce($expenses, fn ($carry, $row) => $carry + (float) $row['amount'], 0.0);
+
+    jsonResponse([
+        'income' => $income,
+        'expenses' => $expenses,
+        'scenarios' => $scenarios,
+        'summary' => [
+            'income_total' => round($incomeTotal, 2),
+            'expense_total' => round($expenseTotal, 2),
+            'savings_total' => round($incomeTotal - $expenseTotal, 2),
+            'net_monthly_balance' => round($incomeTotal - $expenseTotal, 2),
+        ],
+    ]);
+}
+
+function createIncome(int $userId): void
+{
+    $body = readJsonBody();
+    $source = trim((string) ($body['source_name'] ?? ''));
+    $amount = toMoney($body['amount'] ?? null, 'amount');
+    $frequency = trim((string) ($body['frequency'] ?? 'monthly'));
+
+    if ($source === '') {
+        jsonResponse(['error' => 'source_name is required'], 422);
+    }
+
+    $pdo = db();
+    $stmt = $pdo->prepare('INSERT INTO income (user_id, source_name, amount, frequency) VALUES (?, ?, ?, ?)');
+    $stmt->execute([$userId, $source, $amount, $frequency]);
+
+    jsonResponse(['message' => 'Income added'], 201);
+}
+
+function updateIncome(int $userId): void
+{
+    $body = readJsonBody();
+    $incomeId = toInt($body['income_id'] ?? null, 'income_id');
+    $source = trim((string) ($body['source_name'] ?? ''));
+    $amount = toMoney($body['amount'] ?? null, 'amount');
+    $frequency = trim((string) ($body['frequency'] ?? 'monthly'));
+
+    $pdo = db();
+    $stmt = $pdo->prepare('UPDATE income SET source_name = ?, amount = ?, frequency = ? WHERE income_id = ? AND user_id = ?');
+    $stmt->execute([$source, $amount, $frequency, $incomeId, $userId]);
+
+    jsonResponse(['message' => 'Income updated']);
+}
+
+function deleteIncome(int $userId): void
+{
+    $body = readJsonBody();
+    $incomeId = toInt($body['income_id'] ?? null, 'income_id');
+
+    $pdo = db();
+    $stmt = $pdo->prepare('DELETE FROM income WHERE income_id = ? AND user_id = ?');
+    $stmt->execute([$incomeId, $userId]);
+
+    jsonResponse(['message' => 'Income deleted']);
+}
+
+function createExpense(int $userId): void
+{
+    $body = readJsonBody();
+    $category = trim((string) ($body['category'] ?? ''));
+    $amount = toMoney($body['amount'] ?? null, 'amount');
+    $date = trim((string) ($body['date'] ?? date('Y-m-d')));
+
+    if ($category === '') {
+        jsonResponse(['error' => 'category is required'], 422);
+    }
+
+    $pdo = db();
+    $stmt = $pdo->prepare('INSERT INTO expenses (user_id, category, amount, date) VALUES (?, ?, ?, ?)');
+    $stmt->execute([$userId, $category, $amount, $date]);
+
+    jsonResponse(['message' => 'Expense added'], 201);
+}
+
+function updateExpense(int $userId): void
+{
+    $body = readJsonBody();
+    $expenseId = toInt($body['expense_id'] ?? null, 'expense_id');
+    $category = trim((string) ($body['category'] ?? ''));
+    $amount = toMoney($body['amount'] ?? null, 'amount');
+    $date = trim((string) ($body['date'] ?? date('Y-m-d')));
+
+    $pdo = db();
+    $stmt = $pdo->prepare('UPDATE expenses SET category = ?, amount = ?, date = ? WHERE expense_id = ? AND user_id = ?');
+    $stmt->execute([$category, $amount, $date, $expenseId, $userId]);
+
+    jsonResponse(['message' => 'Expense updated']);
+}
+
+function deleteExpense(int $userId): void
+{
+    $body = readJsonBody();
+    $expenseId = toInt($body['expense_id'] ?? null, 'expense_id');
+
+    $pdo = db();
+    $stmt = $pdo->prepare('DELETE FROM expenses WHERE expense_id = ? AND user_id = ?');
+    $stmt->execute([$expenseId, $userId]);
+
+    jsonResponse(['message' => 'Expense deleted']);
+}
+
+function simulateScenario(): void
+{
+    $body = readJsonBody();
+    $monthlyAmount = toMoney($body['monthly_amount'] ?? 0, 'monthly_amount');
+    $durationMonths = max(1, toInt($body['duration_months'] ?? 12, 'duration_months'));
+    $returnRate = (float) ($body['expected_return_rate'] ?? 7);
+
+    $futureSavings = $monthlyAmount * $durationMonths;
+    $monthlyRate = $returnRate / 100 / 12;
+
+    if ($monthlyRate <= 0) {
+        $futureInvestment = $futureSavings;
+    } else {
+        $futureInvestment = $monthlyAmount * ((pow(1 + $monthlyRate, $durationMonths) - 1) / $monthlyRate);
+    }
+
+    jsonResponse([
+        'projection' => [
+            'future_savings' => round($futureSavings, 2),
+            'future_investment' => round($futureInvestment, 2),
+            'duration_months' => $durationMonths,
+            'monthly_amount' => $monthlyAmount,
+            'expected_return_rate' => $returnRate,
+        ],
+    ]);
+}
+
+function createScenario(int $userId): void
+{
+    $body = readJsonBody();
+    $savedName = trim((string) ($body['saved_name'] ?? 'My Scenario'));
+    $type = trim((string) ($body['type'] ?? 'save'));
+    $monthlyAmount = toMoney($body['monthly_amount'] ?? 0, 'monthly_amount');
+    $durationMonths = toInt($body['duration_months'] ?? 12, 'duration_months');
+    $returnRate = (float) ($body['expected_return_rate'] ?? 7);
+
+    $pdo = db();
+    $pdo->beginTransaction();
+
+    try {
+        $scenarioStmt = $pdo->prepare(
+            'INSERT INTO scenarios (user_id, type, monthly_amount, duration_months, expected_return_rate) VALUES (?, ?, ?, ?, ?)'
+        );
+        $scenarioStmt->execute([$userId, $type, $monthlyAmount, $durationMonths, $returnRate]);
+
+        $scenarioId = (int) $pdo->lastInsertId();
+
+        $junctionStmt = $pdo->prepare('INSERT INTO budget_scenarios (user_id, scenario_id, saved_name) VALUES (?, ?, ?)');
+        $junctionStmt->execute([$userId, $scenarioId, $savedName]);
+
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        jsonResponse(['error' => 'Unable to save scenario'], 500);
+    }
+
+    jsonResponse(['message' => 'Scenario saved'], 201);
+}
+
+function updateScenario(int $userId): void
+{
+    $body = readJsonBody();
+    $scenarioId = toInt($body['scenario_id'] ?? null, 'scenario_id');
+    $savedName = trim((string) ($body['saved_name'] ?? 'Scenario'));
+    $type = trim((string) ($body['type'] ?? 'save'));
+    $monthlyAmount = toMoney($body['monthly_amount'] ?? 0, 'monthly_amount');
+    $durationMonths = toInt($body['duration_months'] ?? 12, 'duration_months');
+    $returnRate = (float) ($body['expected_return_rate'] ?? 7);
+
+    $pdo = db();
+    $pdo->beginTransaction();
+
+    try {
+        $scenarioStmt = $pdo->prepare(
+            'UPDATE scenarios SET type = ?, monthly_amount = ?, duration_months = ?, expected_return_rate = ? WHERE scenario_id = ? AND user_id = ?'
+        );
+        $scenarioStmt->execute([$type, $monthlyAmount, $durationMonths, $returnRate, $scenarioId, $userId]);
+
+        $junctionStmt = $pdo->prepare('UPDATE budget_scenarios SET saved_name = ? WHERE scenario_id = ? AND user_id = ?');
+        $junctionStmt->execute([$savedName, $scenarioId, $userId]);
+
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        jsonResponse(['error' => 'Unable to update scenario'], 500);
+    }
+
+    jsonResponse(['message' => 'Scenario updated']);
+}
+
+function deleteScenario(int $userId): void
+{
+    $body = readJsonBody();
+    $scenarioId = toInt($body['scenario_id'] ?? null, 'scenario_id');
+
+    $pdo = db();
+    $pdo->beginTransaction();
+
+    try {
+        $junctionStmt = $pdo->prepare('DELETE FROM budget_scenarios WHERE scenario_id = ? AND user_id = ?');
+        $junctionStmt->execute([$scenarioId, $userId]);
+
+        $scenarioStmt = $pdo->prepare('DELETE FROM scenarios WHERE scenario_id = ? AND user_id = ?');
+        $scenarioStmt->execute([$scenarioId, $userId]);
+
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        jsonResponse(['error' => 'Unable to delete scenario'], 500);
+    }
+
+    jsonResponse(['message' => 'Scenario deleted']);
+}
