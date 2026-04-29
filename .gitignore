@@ -1,0 +1,40 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+.DS_Store
+
+# PHP
+.phpunit.result.cache
+
+# Database backups
+*.sql.bak
+*.sql.backup
+
+# Logs
+*.log
+logs/
+
+# Node (if we add frontend build later)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Composer
+vendor/
+composer.lock
+
+# OS temporary files
+*.tmp
+*.temp
