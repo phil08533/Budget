@@ -4,33 +4,40 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/db.php';
 
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    jsonResponse(['error' => 'Not authenticated'], 401);
+}
+
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $action = $_GET['action'] ?? '';
 
-$demoUserId = 1;
+$userId = (int) $_SESSION['user_id'];
 
 switch ($action) {
     case 'dashboard':
         if ($method !== 'GET') {
             jsonResponse(['error' => 'Method not allowed'], 405);
         }
-        getDashboard($demoUserId);
+        getDashboard($userId);
         break;
 
     case 'income':
         match ($method) {
-            'POST' => createIncome($demoUserId),
-            'PUT' => updateIncome($demoUserId),
-            'DELETE' => deleteIncome($demoUserId),
+            'POST' => createIncome($userId),
+            'PUT' => updateIncome($userId),
+            'DELETE' => deleteIncome($userId),
             default => jsonResponse(['error' => 'Method not allowed'], 405),
         };
         break;
 
     case 'expense':
         match ($method) {
-            'POST' => createExpense($demoUserId),
-            'PUT' => updateExpense($demoUserId),
-            'DELETE' => deleteExpense($demoUserId),
+            'POST' => createExpense($userId),
+            'PUT' => updateExpense($userId),
+            'DELETE' => deleteExpense($userId),
             default => jsonResponse(['error' => 'Method not allowed'], 405),
         };
         break;
@@ -44,9 +51,9 @@ switch ($action) {
 
     case 'scenario':
         match ($method) {
-            'POST' => createScenario($demoUserId),
-            'PUT' => updateScenario($demoUserId),
-            'DELETE' => deleteScenario($demoUserId),
+            'POST' => createScenario($userId),
+            'PUT' => updateScenario($userId),
+            'DELETE' => deleteScenario($userId),
             default => jsonResponse(['error' => 'Method not allowed'], 405),
         };
         break;

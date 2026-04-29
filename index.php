@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -5,8 +12,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FutureWorth - Financial Planning</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #0a5fb5 0%, #0a246a 100%);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+    }
+    .user-info {
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .logout-btn {
+      background: #cc3333;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .logout-btn:hover {
+      background: #bb2222;
+      transform: translateY(-1px);
+    }
+  </style>
 </head>
 <body>
+  <div class="header-top">
+    <div style="color: white; font-weight: 600;">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
   <header class="hero">
     <h1>💰 FutureWorth</h1>
     <p>See Your Financial Future. Budget smarter. Save faster.</p>

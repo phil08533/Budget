@@ -2,6 +2,14 @@ const $ = (sel) => document.querySelector(sel);
 
 let latestSimulationPayload = null;
 
+function logout() {
+  if (confirm('Are you sure you want to logout?')) {
+    fetch('auth.php?action=logout', { method: 'POST' })
+      .then(() => window.location.href = 'login.php')
+      .catch(err => alert('Logout error: ' + err.message));
+  }
+}
+
 function money(value) {
   return `$${Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
