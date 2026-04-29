@@ -27,15 +27,15 @@
           <p id="expenseTotal">$0.00</p>
           <small style="color: #999; font-size: 0.8rem;">Average monthly spending</small>
         </article>
-        <article class="card">
-          <h3>Monthly Surplus</h3>
+        <article class="card highlight-card">
+          <h3>Monthly Savings</h3>
           <p id="savingsTotal">$0.00</p>
-          <small style="color: #999; font-size: 0.8rem;">Income minus expenses</small>
+          <small style="color: #999; font-size: 0.8rem;">Money you're saving each month</small>
         </article>
-        <article class="card">
-          <h3>Annual Projection</h3>
+        <article class="card highlight-card">
+          <h3>Annual Savings</h3>
           <p id="netTotal">$0.00</p>
-          <small style="color: #999; font-size: 0.8rem;">If you save this amount yearly</small>
+          <small style="color: #999; font-size: 0.8rem;">Total savings if you maintain this rate</small>
         </article>
       </div>
     </section>

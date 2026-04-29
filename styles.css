@@ -93,6 +93,33 @@ section > h2 {
   border-color: var(--xp-accent-light);
 }
 
+.card.highlight-card {
+  background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%);
+  border: 2px solid var(--xp-accent);
+  position: relative;
+}
+
+.card.highlight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--xp-accent) 0%, var(--xp-accent-light) 100%);
+  border-radius: 8px 8px 0 0;
+}
+
+.card.highlight-card h3 {
+  color: var(--xp-accent);
+  font-weight: 800;
+}
+
+.card.highlight-card p {
+  color: var(--xp-accent);
+  font-size: 2.2rem;
+}
+
 .card h3 {
   margin: 0 0 12px 0;
   font-size: 0.8rem;
