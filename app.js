@@ -10,6 +10,15 @@ function logout() {
   }
 }
 
+function changeTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('futureworth-theme', theme);
+  const themeSelect = document.getElementById('themeSelect');
+  if (themeSelect) {
+    themeSelect.value = theme;
+  }
+}
+
 function money(value) {
   return `$${Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
@@ -183,12 +192,22 @@ function toggleReturnRate() {
   }
 }
 
-// Set today's date in date input when page loads
+// Initialize theme and other setup
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize theme from localStorage
+  const savedTheme = localStorage.getItem('futureworth-theme') || 'blue';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  const themeSelect = document.getElementById('themeSelect');
+  if (themeSelect) {
+    themeSelect.value = savedTheme;
+  }
+
+  // Set today's date in date input
   const expenseDateInput = document.getElementById('expenseDate');
   if (expenseDateInput) {
     expenseDateInput.valueAsDate = new Date();
   }
+
   // Initialize return rate visibility
   toggleReturnRate();
 });

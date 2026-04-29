@@ -49,7 +49,16 @@ if (!isset($_SESSION['user_id'])) {
 <body>
   <div class="header-top">
     <div style="color: white; font-weight: 600;">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</div>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+    <div style="display: flex; gap: 15px; align-items: center;">
+      <select id="themeSelect" onchange="changeTheme(this.value)" style="padding: 6px 10px; border-radius: 4px; border: none; background: rgba(255,255,255,0.9); cursor: pointer; font-weight: 600;">
+        <option value="blue">🔵 Blue</option>
+        <option value="dark">🌙 Dark</option>
+        <option value="green">🟢 Green</option>
+        <option value="purple">🟣 Purple</option>
+        <option value="orange">🟠 Orange</option>
+      </select>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
   </div>
 
   <header class="hero">

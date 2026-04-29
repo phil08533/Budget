@@ -1,3 +1,68 @@
+/* Blue Theme (Default) */
+:root[data-theme="blue"] {
+  --xp-bg: #e8eef7;
+  --xp-panel: #f5f8fc;
+  --xp-text: #1a1a1a;
+  --xp-border: #c0c7d8;
+  --xp-border-light: #f0f3f9;
+  --xp-accent: #0052cc;
+  --xp-accent-light: #1366e6;
+  --xp-gradient-start: #0052cc;
+  --xp-gradient-end: #3385ff;
+}
+
+/* Dark Theme */
+:root[data-theme="dark"] {
+  --xp-bg: #1a1a1a;
+  --xp-panel: #2d2d2d;
+  --xp-text: #f0f0f0;
+  --xp-border: #404040;
+  --xp-border-light: #3a3a3a;
+  --xp-accent: #66b3ff;
+  --xp-accent-light: #80c1ff;
+  --xp-gradient-start: #1a1a2e;
+  --xp-gradient-end: #0f3460;
+}
+
+/* Green Theme */
+:root[data-theme="green"] {
+  --xp-bg: #e8f5e9;
+  --xp-panel: #f1f8f6;
+  --xp-text: #1b5e20;
+  --xp-border: #a5d6a7;
+  --xp-border-light: #c8e6c9;
+  --xp-accent: #2e7d32;
+  --xp-accent-light: #43a047;
+  --xp-gradient-start: #1b5e20;
+  --xp-gradient-end: #4caf50;
+}
+
+/* Purple Theme */
+:root[data-theme="purple"] {
+  --xp-bg: #f3e5f5;
+  --xp-panel: #faf6f9;
+  --xp-text: #4a148c;
+  --xp-border: #ce93d8;
+  --xp-border-light: #e1bee7;
+  --xp-accent: #7b1fa2;
+  --xp-accent-light: #9c27b0;
+  --xp-gradient-start: #6a1b9a;
+  --xp-gradient-end: #ab47bc;
+}
+
+/* Orange Theme */
+:root[data-theme="orange"] {
+  --xp-bg: #ffe8d6;
+  --xp-panel: #fff3e0;
+  --xp-text: #e65100;
+  --xp-border: #ffb74d;
+  --xp-border-light: #ffe0b2;
+  --xp-accent: #e65100;
+  --xp-accent-light: #ff6f00;
+  --xp-gradient-start: #e65100;
+  --xp-gradient-end: #ff9800;
+}
+
 :root {
   --xp-bg: #e8eef7;
   --xp-panel: #f5f8fc;
@@ -6,6 +71,8 @@
   --xp-border-light: #f0f3f9;
   --xp-accent: #0052cc;
   --xp-accent-light: #1366e6;
+  --xp-gradient-start: #0052cc;
+  --xp-gradient-end: #3385ff;
 }
 
 * { box-sizing: border-box; }
@@ -14,7 +81,7 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
   color: var(--xp-text);
-  background: linear-gradient(135deg, #0052cc 0%, #3385ff 100%);
+  background: linear-gradient(135deg, var(--xp-gradient-start) 0%, var(--xp-gradient-end) 100%);
   min-height: 100vh;
   padding: 20px;
 }
@@ -25,7 +92,7 @@ body {
 }
 
 .hero {
-  background: linear-gradient(135deg, #0052cc 0%, #0052cc 100%);
+  background: linear-gradient(135deg, var(--xp-accent) 0%, var(--xp-accent-light) 100%);
   color: white;
   padding: 40px 30px;
   margin-bottom: 25px;

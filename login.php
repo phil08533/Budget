@@ -210,6 +210,10 @@
   </div>
 
   <script>
+    // Initialize theme from localStorage
+    const savedTheme = localStorage.getItem('futureworth-theme') || 'blue';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
     function toggleForms() {
       const loginForm = document.getElementById('loginForm');
       const registerForm = document.getElementById('registerForm');
