@@ -1,78 +1,105 @@
-/* Blue Theme (Default) */
+/* Blue Gradient Theme (Default) */
 :root[data-theme="blue"] {
-  --xp-bg: #e8eef7;
-  --xp-panel: #f5f8fc;
-  --xp-text: #1a1a1a;
-  --xp-border: #c0c7d8;
-  --xp-border-light: #f0f3f9;
-  --xp-accent: #0052cc;
-  --xp-accent-light: #1366e6;
-  --xp-gradient-start: #0052cc;
-  --xp-gradient-end: #3385ff;
+  --xp-bg: #e3f2fd;
+  --xp-panel: #f8fbff;
+  --xp-text: #0d47a1;
+  --xp-border: #90caf9;
+  --xp-border-light: #e3f2fd;
+  --xp-accent: #1976d2;
+  --xp-accent-light: #42a5f5;
+  --xp-gradient-start: #1e3a8a;
+  --xp-gradient-end: #3b82f6;
 }
 
-/* Dark Theme */
-:root[data-theme="dark"] {
-  --xp-bg: #1a1a1a;
-  --xp-panel: #2d2d2d;
-  --xp-text: #f0f0f0;
-  --xp-border: #404040;
-  --xp-border-light: #3a3a3a;
-  --xp-accent: #66b3ff;
-  --xp-accent-light: #80c1ff;
-  --xp-gradient-start: #1a1a2e;
-  --xp-gradient-end: #0f3460;
+/* Sunset Gradient Theme */
+:root[data-theme="sunset"] {
+  --xp-bg: #fff5e6;
+  --xp-panel: #fffbf7;
+  --xp-text: #d97706;
+  --xp-border: #fbbf24;
+  --xp-border-light: #fef3c7;
+  --xp-accent: #f59e0b;
+  --xp-accent-light: #fbbf24;
+  --xp-gradient-start: #ea580c;
+  --xp-gradient-end: #f97316;
 }
 
-/* Green Theme */
-:root[data-theme="green"] {
-  --xp-bg: #e8f5e9;
-  --xp-panel: #f1f8f6;
-  --xp-text: #1b5e20;
-  --xp-border: #a5d6a7;
-  --xp-border-light: #c8e6c9;
-  --xp-accent: #2e7d32;
-  --xp-accent-light: #43a047;
-  --xp-gradient-start: #1b5e20;
-  --xp-gradient-end: #4caf50;
+/* Ocean Gradient Theme */
+:root[data-theme="ocean"] {
+  --xp-bg: #e0f4ff;
+  --xp-panel: #f0faff;
+  --xp-text: #0369a1;
+  --xp-border: #06b6d4;
+  --xp-border-light: #cffafe;
+  --xp-accent: #0891b2;
+  --xp-accent-light: #06b6d4;
+  --xp-gradient-start: #0c4a6e;
+  --xp-gradient-end: #0369a1;
 }
 
-/* Purple Theme */
+/* Purple Gradient Theme */
 :root[data-theme="purple"] {
-  --xp-bg: #f3e5f5;
-  --xp-panel: #faf6f9;
-  --xp-text: #4a148c;
-  --xp-border: #ce93d8;
-  --xp-border-light: #e1bee7;
-  --xp-accent: #7b1fa2;
-  --xp-accent-light: #9c27b0;
-  --xp-gradient-start: #6a1b9a;
-  --xp-gradient-end: #ab47bc;
+  --xp-bg: #f3e8ff;
+  --xp-panel: #faf5ff;
+  --xp-text: #6b21a8;
+  --xp-border: #d8b4fe;
+  --xp-border-light: #ede9fe;
+  --xp-accent: #9333ea;
+  --xp-accent-light: #a855f7;
+  --xp-gradient-start: #581c87;
+  --xp-gradient-end: #a855f7;
 }
 
-/* Orange Theme */
-:root[data-theme="orange"] {
-  --xp-bg: #ffe8d6;
-  --xp-panel: #fff3e0;
-  --xp-text: #e65100;
-  --xp-border: #ffb74d;
-  --xp-border-light: #ffe0b2;
-  --xp-accent: #e65100;
-  --xp-accent-light: #ff6f00;
-  --xp-gradient-start: #e65100;
-  --xp-gradient-end: #ff9800;
+/* Forest Gradient Theme */
+:root[data-theme="forest"] {
+  --xp-bg: #dffcf0;
+  --xp-panel: #f0fdf4;
+  --xp-text: #166534;
+  --xp-border: #86efac;
+  --xp-border-light: #dcfce7;
+  --xp-accent: #16a34a;
+  --xp-accent-light: #4ade80;
+  --xp-gradient-start: #15803d;
+  --xp-gradient-end: #22c55e;
 }
 
+/* Rose Gradient Theme */
+:root[data-theme="rose"] {
+  --xp-bg: #ffe4e6;
+  --xp-panel: #fff7f8;
+  --xp-text: #9f1239;
+  --xp-border: #f472b6;
+  --xp-border-light: #fbcfe8;
+  --xp-accent: #e11d48;
+  --xp-accent-light: #f43f5e;
+  --xp-gradient-start: #831843;
+  --xp-gradient-end: #f43f5e;
+}
+
+/* Dark Gradient Theme */
+:root[data-theme="dark"] {
+  --xp-bg: #1a1a2e;
+  --xp-panel: #16213e;
+  --xp-text: #e0e0e0;
+  --xp-border: #0f3460;
+  --xp-border-light: #2a3f5f;
+  --xp-accent: #00d4ff;
+  --xp-accent-light: #00f0ff;
+  --xp-gradient-start: #0f1c3f;
+  --xp-gradient-end: #16213e;
+}
+
+/* Default fallback */
 :root {
-  --xp-bg: #e8eef7;
-  --xp-panel: #f5f8fc;
-  --xp-text: #1a1a1a;
-  --xp-border: #c0c7d8;
-  --xp-border-light: #f0f3f9;
-  --xp-accent: #0052cc;
-  --xp-accent-light: #1366e6;
-  --xp-gradient-start: #0052cc;
-  --xp-gradient-end: #3385ff;
+  --xp-bg: #e3f2fd;
+  --xp-panel: #f8fbff;
+  --xp-text: #0d47a1;
+  --xp-border: #90caf9;
+  --xp-border-light: #e3f2fd;
+  --xp-accent: #1976d2;
+  --xp-accent-light: #42a5f5;
+  --xp-gradient-start: #1e3a8a;
+  --xp-gradient-end: #3b82f6;
 }
 
 * { box-sizing: border-box; }
