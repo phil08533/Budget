@@ -14,6 +14,30 @@ async function api(action, method = 'GET', body = null) {
   return res.json();
 }
 
+function calculateMonthlyValue(amount, frequency) {
+  switch (frequency) {
+    case 'daily': return amount * 30.44;
+    case 'weekly': return amount * 4.33;
+    case 'bi-weekly': return amount * 2.17;
+    case 'monthly': return amount;
+    case 'yearly': return amount / 12;
+    case 'one-time': return 0;
+    default: return 0;
+  }
+}
+
+function getFrequencyLabel(frequency) {
+  const labels = {
+    'daily': '📅 Daily',
+    'weekly': '📆 Weekly',
+    'bi-weekly': '📆 Bi-Weekly',
+    'monthly': '📋 Monthly',
+    'yearly': '📅 Yearly',
+    'one-time': '🔔 One-Time'
+  };
+  return labels[frequency] || frequency;
+}
+
 async function loadDashboard() {
   const data = await api('dashboard');
 
@@ -22,6 +46,30 @@ async function loadDashboard() {
   $('#expenseTotal').textContent = money(data.summary.expense_total);
   $('#savingsTotal').textContent = money(data.summary.savings_total);
   $('#netTotal').textContent = money(data.summary.net_monthly_balance);
+
+  // Calculate breakdown by frequency
+  let dailyExpenses = 0, weeklyExpenses = 0, monthlyExpenses = 0, yearlyExpenses = 0;
+  let dailyCount = 0, weeklyCount = 0, monthlyCount = 0, yearlyCount = 0;
+
+  if (data.expenses.length) {
+    data.expenses.forEach((item) => {
+      const monthlyVal = calculateMonthlyValue(item.amount, item.frequency);
+      if (item.frequency === 'daily') { dailyExpenses += item.amount; dailyCount++; }
+      else if (item.frequency === 'weekly') { weeklyExpenses += item.amount; weeklyCount++; }
+      else if (item.frequency === 'monthly' || item.frequency === 'bi-weekly') { monthlyExpenses += monthlyVal; monthlyCount++; }
+      else if (item.frequency === 'yearly') { yearlyExpenses += item.amount; yearlyCount++; }
+      else if (item.frequency === 'one-time') { monthlyExpenses += 0; } // one-time doesn't affect recurring
+    });
+  }
+
+  $('#dailyExpenses').textContent = money(dailyExpenses) + '/day';
+  $('#dailyExpenseCount').textContent = dailyCount + (dailyCount === 1 ? ' item' : ' items');
+  $('#weeklyExpenses').textContent = money(weeklyExpenses) + '/week';
+  $('#weeklyExpenseCount').textContent = weeklyCount + (weeklyCount === 1 ? ' item' : ' items');
+  $('#monthlyExpenses').textContent = money(monthlyExpenses) + '/month';
+  $('#monthlyExpenseCount').textContent = monthlyCount + (monthlyCount === 1 ? ' item' : ' items');
+  $('#yearlyExpenses').textContent = money(yearlyExpenses) + '/year';
+  $('#yearlyExpenseCount').textContent = yearlyCount + (yearlyCount === 1 ? ' item' : ' items');
 
   // Render income list
   const incomeList = $('#incomeList');
@@ -33,7 +81,7 @@ async function loadDashboard() {
       div.innerHTML = `
         <div>
           <h4 style="margin: 0;">${item.source_name}</h4>
-          <p style="margin: 0.25rem 0 0 0; color: #666;">${item.frequency}</p>
+          <p style="margin: 0.25rem 0 0 0; color: #666;">${getFrequencyLabel(item.frequency)}</p>
         </div>
         <div style="text-align: right;">
           <div style="font-weight: bold; color: var(--accent);">${money(item.amount)}</div>
@@ -56,7 +104,7 @@ async function loadDashboard() {
       div.innerHTML = `
         <div>
           <h4 style="margin: 0;">${item.category}</h4>
-          <p style="margin: 0.25rem 0 0 0; color: #666;">${item.date}</p>
+          <p style="margin: 0.25rem 0 0 0; color: #666;">${getFrequencyLabel(item.frequency)} • ${item.date}</p>
         </div>
         <div style="text-align: right;">
           <div style="font-weight: bold; color: var(--accent);">${money(item.amount)}</div>
@@ -96,6 +144,34 @@ async function loadDashboard() {
   });
 }
 
+// Help tooltip system
+document.addEventListener('mouseover', (e) => {
+  const helpIcon = e.target.closest('.help-icon');
+  if (!helpIcon) return;
+
+  const tooltip = $('#helpTooltip');
+  tooltip.textContent = helpIcon.getAttribute('title');
+  tooltip.style.display = 'block';
+
+  const rect = helpIcon.getBoundingClientRect();
+  tooltip.style.left = (rect.left + rect.width / 2 - 100) + 'px';
+  tooltip.style.top = (rect.top - 40) + 'px';
+});
+
+document.addEventListener('mouseout', (e) => {
+  if (e.target.closest('.help-icon')) {
+    $('#helpTooltip').style.display = 'none';
+  }
+});
+
+// Set today's date in date input when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  const expenseDateInput = document.getElementById('expenseDate');
+  if (expenseDateInput) {
+    expenseDateInput.valueAsDate = new Date();
+  }
+});
+
 $('#incomeForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   try {
@@ -112,12 +188,12 @@ $('#expenseForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   try {
     const form = new FormData(e.target);
-    // Set date to today if not provided
     if (!form.get('date')) {
       form.set('date', new Date().toISOString().split('T')[0]);
     }
     await api('expense', 'POST', Object.fromEntries(form));
     e.target.reset();
+    e.target.querySelector('input[name="date"]').valueAsDate = new Date();
     await loadDashboard();
   } catch (err) {
     alert('Error adding expense: ' + err.message);
@@ -160,6 +236,34 @@ $('#saveScenario').addEventListener('click', async () => {
     await loadDashboard();
   } catch (err) {
     alert('Error saving scenario: ' + err.message);
+  }
+});
+
+$('#loadHistoryBtn').addEventListener('click', async () => {
+  const monthInput = $('#historyMonth').value;
+  if (!monthInput) {
+    alert('Please select a month');
+    return;
+  }
+  try {
+    const data = await api('history', 'GET');
+    const historyList = $('#historyList');
+
+    if (!data.history || !data.history.length) {
+      historyList.innerHTML = '<p style="color: #999; text-align: center;">No historical data available</p>';
+      return;
+    }
+
+    historyList.innerHTML = data.history.map(h => `
+      <div class="history-item">
+        <div>
+          <h4 style="margin: 0;">📅 ${h.snapshot_date}</h4>
+          <p style="margin: 0.25rem 0 0 0; color: #666;">Income: ${money(h.total_income)} | Expenses: ${money(h.total_expenses)} | Savings: ${money(h.monthly_savings)}</p>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    alert('Error loading history: ' + err.message);
   }
 });
 
