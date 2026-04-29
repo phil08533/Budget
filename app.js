@@ -164,12 +164,25 @@ document.addEventListener('mouseout', (e) => {
   }
 });
 
+// Toggle return rate input based on strategy selection
+function toggleReturnRate() {
+  const type = document.querySelector('input[name="type"]:checked').value;
+  const returnRateLabel = document.getElementById('returnRateLabel');
+  if (type === 'invest') {
+    returnRateLabel.style.display = 'flex';
+  } else {
+    returnRateLabel.style.display = 'none';
+  }
+}
+
 // Set today's date in date input when page loads
 document.addEventListener('DOMContentLoaded', () => {
   const expenseDateInput = document.getElementById('expenseDate');
   if (expenseDateInput) {
     expenseDateInput.valueAsDate = new Date();
   }
+  // Initialize return rate visibility
+  toggleReturnRate();
 });
 
 $('#incomeForm').addEventListener('submit', async (e) => {

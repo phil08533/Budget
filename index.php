@@ -145,38 +145,70 @@
       <div id="historyList" style="min-height: 100px;"></div>
     </section>
 
-    <!-- WHAT-IF SIMULATOR -->
+    <!-- SAVINGS & INVESTMENT ESTIMATOR -->
     <section id="simulator">
-      <h2>🎯 What-If Simulator <span class="help-icon" title="Test different savings and investment scenarios">?</span></h2>
-      <p style="color: #666; margin: -1rem 0 1rem 0;">Plan your financial future by testing different scenarios and seeing potential outcomes.</p>
-      <form id="simulateForm" class="grid-4">
-        <label>
-          <small style="color: #666; text-transform: uppercase;">Scenario Name</small>
-          <input name="saved_name" placeholder="e.g., Vacation Fund" value="Quick Simulation" />
-        </label>
-        <label>
-          <small style="color: #666; text-transform: uppercase;">Monthly Amount ($)</small>
-          <input name="monthly_amount" type="number" step="0.01" placeholder="0.00" required />
-        </label>
-        <label>
-          <small style="color: #666; text-transform: uppercase;">Duration (months)</small>
-          <input name="duration_months" type="number" min="1" value="12" required />
-        </label>
-        <label>
-          <small style="color: #666; text-transform: uppercase;">Return Rate (%)</small>
-          <input name="expected_return_rate" type="number" step="0.1" value="7" required />
-        </label>
-        <label>
-          <small style="color: #666; text-transform: uppercase;">Simulation Type</small>
-          <select name="type">
-            <option value="save">💾 Savings Goal</option>
-            <option value="invest">📈 Investment Growth</option>
-            <option value="hybrid">🔄 Hybrid (Both)</option>
-          </select>
-        </label>
-        <div style="display: flex; gap: 0.5rem;">
-          <button class="btn" type="submit" style="flex: 1;">Run Simulation</button>
-          <button class="btn secondary" id="saveScenario" type="button" style="flex: 1;">Save</button>
+      <h2>💰 Savings & Investment Estimator <span class="help-icon" title="Plan how much you'll have by setting savings goals">?</span></h2>
+      <p style="color: #666; margin: 0 0 1.5rem 0; font-size: 0.95rem;">See how much you could save or earn through investments based on your monthly contributions.</p>
+
+      <form id="simulateForm" class="estimator-form">
+        <div class="estimator-section">
+          <h3>📋 Your Plan</h3>
+
+          <label>
+            <small>Plan Name <span class="help-icon" title="Give your plan a memorable name">?</span></small>
+            <input name="saved_name" placeholder="e.g., Vacation Fund, Emergency Fund" value="My Savings Plan" />
+          </label>
+
+          <label>
+            <small>How much will you save/invest per month? <span class="help-icon" title="Enter the amount you can save each month">?</span></small>
+            <input name="monthly_amount" type="number" step="0.01" placeholder="500" required />
+          </label>
+
+          <label>
+            <small>How long will you save? <span class="help-icon" title="Enter the number of months">?</span></small>
+            <div style="display: flex; gap: 10px;">
+              <input name="duration_months" type="number" min="1" value="12" required style="flex: 1;" />
+              <select style="flex: 0 0 auto;" onchange="document.querySelector('input[name=duration_months]').value = this.value === '12' ? 12 : this.value === '24' ? 24 : this.value === '60' ? 60 : this.value === '120' ? 120 : this.value">
+                <option value="">Select...</option>
+                <option value="12">1 Year</option>
+                <option value="24">2 Years</option>
+                <option value="60">5 Years</option>
+                <option value="120">10 Years</option>
+              </select>
+            </div>
+          </label>
+        </div>
+
+        <div class="estimator-section">
+          <h3>📊 Choose Your Strategy</h3>
+
+          <div class="strategy-selector">
+            <label class="strategy-option">
+              <input type="radio" name="type" value="save" checked onchange="toggleReturnRate()" />
+              <div class="strategy-content">
+                <strong>💾 Just Save</strong>
+                <small>Regular savings in a savings account</small>
+              </div>
+            </label>
+
+            <label class="strategy-option">
+              <input type="radio" name="type" value="invest" onchange="toggleReturnRate()" />
+              <div class="strategy-content">
+                <strong>📈 Invest It</strong>
+                <small>Invest in stocks/index funds with growth potential</small>
+              </div>
+            </label>
+          </div>
+
+          <label id="returnRateLabel" style="display: none;">
+            <small>Expected Annual Return Rate (%) <span class="help-icon" title="Average annual return. Stock market average is ~7-10%">?</span></small>
+            <input name="expected_return_rate" type="number" step="0.1" value="7" required />
+          </label>
+        </div>
+
+        <div class="estimator-actions">
+          <button class="btn" type="submit">Calculate Projection</button>
+          <button class="btn secondary" id="saveScenario" type="button">Save This Plan</button>
         </div>
       </form>
 
