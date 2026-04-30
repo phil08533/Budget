@@ -21,7 +21,7 @@ if (!isset($_SESSION['user_id'])) {
       background: linear-gradient(135deg, #0a5fb5 0%, #0a246a 100%);
       color: white;
       padding: 15px 20px;
-      border-radius: 8px;
+      border-radius: 16px;
     }
     .user-info {
       font-size: 0.9rem;
@@ -34,7 +34,7 @@ if (!isset($_SESSION['user_id'])) {
       color: white;
       border: none;
       padding: 8px 16px;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
       font-size: 0.85rem;
@@ -50,14 +50,12 @@ if (!isset($_SESSION['user_id'])) {
   <div class="header-top">
     <div style="color: white; font-weight: 600;">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</div>
     <div style="display: flex; gap: 15px; align-items: center;">
-      <select id="themeSelect" onchange="changeTheme(this.value)" style="padding: 6px 10px; border-radius: 4px; border: none; background: rgba(255,255,255,0.9); cursor: pointer; font-weight: 600;">
-        <option value="blue">💙 Blue Gradient</option>
-        <option value="sunset">🌅 Sunset</option>
-        <option value="ocean">🌊 Ocean</option>
-        <option value="purple">💜 Purple Gradient</option>
-        <option value="forest">🌲 Forest</option>
-        <option value="rose">🌹 Rose</option>
-        <option value="dark">🌙 Dark</option>
+      <select id="themeSelect" onchange="changeTheme(this.value)" style="padding: 6px 10px; border-radius: 10px; border: none; background: rgba(255,255,255,0.9); cursor: pointer; font-weight: 600;">
+        <option value="sage">🌿 Sage & Earth</option>
+        <option value="taupe">🏜️ Warm Taupe</option>
+        <option value="moss">🍃 Moss & Stone</option>
+        <option value="clay">🪨 Clay & Cream</option>
+        <option value="woodland">🌲 Woodland</option>
       </select>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>

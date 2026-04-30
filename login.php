@@ -17,7 +17,7 @@
       width: 100%;
       max-width: 400px;
       background: white;
-      border-radius: 8px;
+      border-radius: 16px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
       padding: 40px;
     }
@@ -47,7 +47,7 @@
     .auth-form input {
       padding: 12px;
       border: 1px solid #c0c7d8;
-      border-radius: 6px;
+      border-radius: 10px;
       font-size: 0.95rem;
       transition: all 0.2s ease;
     }
@@ -60,7 +60,7 @@
       background: #ffe6e6;
       color: #cc0000;
       padding: 12px;
-      border-radius: 6px;
+      border-radius: 10px;
       font-size: 0.9rem;
       display: none;
       margin-bottom: 10px;
@@ -72,7 +72,7 @@
       background: #e6ffe6;
       color: #006600;
       padding: 12px;
-      border-radius: 6px;
+      border-radius: 10px;
       font-size: 0.9rem;
       display: none;
       margin-bottom: 10px;
@@ -85,7 +85,7 @@
       background: linear-gradient(135deg, #0052cc 0%, #0052cc 100%);
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 10px;
       font-weight: 700;
       cursor: pointer;
       font-size: 0.95rem;
@@ -118,7 +118,7 @@
     .demo-login {
       background: #f0f7ff;
       border: 2px dashed #0052cc;
-      border-radius: 6px;
+      border-radius: 12px;
       padding: 15px;
       margin-top: 20px;
       text-align: center;
@@ -133,7 +133,7 @@
       color: white;
       border: none;
       padding: 8px 16px;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
       font-size: 0.85rem;

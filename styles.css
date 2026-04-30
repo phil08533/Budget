@@ -1,105 +1,79 @@
-/* Blue Gradient Theme (Default) */
-:root[data-theme="blue"] {
-  --xp-bg: #e3f2fd;
-  --xp-panel: #f8fbff;
-  --xp-text: #0d47a1;
-  --xp-border: #90caf9;
-  --xp-border-light: #e3f2fd;
-  --xp-accent: #1976d2;
-  --xp-accent-light: #42a5f5;
-  --xp-gradient-start: #1e3a8a;
-  --xp-gradient-end: #3b82f6;
+/* Sage & Earth Theme (Default - Nike Space Hippie Inspired) */
+:root[data-theme="sage"] {
+  --xp-bg: #f5f8f5;
+  --xp-panel: #faf9f6;
+  --xp-text: #6b7860;
+  --xp-border: #d4cfc4;
+  --xp-border-light: #e8e6e0;
+  --xp-accent: #9ba896;
+  --xp-accent-light: #b8b5a8;
+  --xp-gradient-start: #7a8a70;
+  --xp-gradient-end: #a2a896;
 }
 
-/* Sunset Gradient Theme */
-:root[data-theme="sunset"] {
-  --xp-bg: #fff5e6;
-  --xp-panel: #fffbf7;
-  --xp-text: #d97706;
-  --xp-border: #fbbf24;
-  --xp-border-light: #fef3c7;
-  --xp-accent: #f59e0b;
-  --xp-accent-light: #fbbf24;
-  --xp-gradient-start: #ea580c;
-  --xp-gradient-end: #f97316;
+/* Warm Taupe Theme */
+:root[data-theme="taupe"] {
+  --xp-bg: #f8f4f0;
+  --xp-panel: #fdfbf8;
+  --xp-text: #7a6b5f;
+  --xp-border: #d9cdc0;
+  --xp-border-light: #e9e4dc;
+  --xp-accent: #c9a577;
+  --xp-accent-light: #d9b890;
+  --xp-gradient-start: #b89968;
+  --xp-gradient-end: #d4a87d;
 }
 
-/* Ocean Gradient Theme */
-:root[data-theme="ocean"] {
-  --xp-bg: #e0f4ff;
-  --xp-panel: #f0faff;
-  --xp-text: #0369a1;
-  --xp-border: #06b6d4;
-  --xp-border-light: #cffafe;
-  --xp-accent: #0891b2;
-  --xp-accent-light: #06b6d4;
-  --xp-gradient-start: #0c4a6e;
-  --xp-gradient-end: #0369a1;
+/* Moss & Stone Theme */
+:root[data-theme="moss"] {
+  --xp-bg: #f3f6f3;
+  --xp-panel: #f9faf8;
+  --xp-text: #5f6b5f;
+  --xp-border: #cfd4ca;
+  --xp-border-light: #e4e8e2;
+  --xp-accent: #8fa896;
+  --xp-accent-light: #a8bda8;
+  --xp-gradient-start: #6f8a6f;
+  --xp-gradient-end: #9ba8a0;
 }
 
-/* Purple Gradient Theme */
-:root[data-theme="purple"] {
-  --xp-bg: #f3e8ff;
-  --xp-panel: #faf5ff;
-  --xp-text: #6b21a8;
-  --xp-border: #d8b4fe;
-  --xp-border-light: #ede9fe;
-  --xp-accent: #9333ea;
-  --xp-accent-light: #a855f7;
-  --xp-gradient-start: #581c87;
-  --xp-gradient-end: #a855f7;
+/* Clay & Cream Theme */
+:root[data-theme="clay"] {
+  --xp-bg: #faf7f3;
+  --xp-panel: #fefdfb;
+  --xp-text: #8b6f5f;
+  --xp-border: #dccfc0;
+  --xp-border-light: #ede5dc;
+  --xp-accent: #d99860;
+  --xp-accent-light: #e8ad7a;
+  --xp-gradient-start: #d4855f;
+  --xp-gradient-end: #e9a47a;
 }
 
-/* Forest Gradient Theme */
-:root[data-theme="forest"] {
-  --xp-bg: #dffcf0;
-  --xp-panel: #f0fdf4;
-  --xp-text: #166534;
-  --xp-border: #86efac;
-  --xp-border-light: #dcfce7;
-  --xp-accent: #16a34a;
-  --xp-accent-light: #4ade80;
-  --xp-gradient-start: #15803d;
-  --xp-gradient-end: #22c55e;
+/* Woodland Theme */
+:root[data-theme="woodland"] {
+  --xp-bg: #f2f6f1;
+  --xp-panel: #f8fbf8;
+  --xp-text: #4a5a48;
+  --xp-border: #c8d4c0;
+  --xp-border-light: #dce6d8;
+  --xp-accent: #6b8060;
+  --xp-accent-light: #8a9d7f;
+  --xp-gradient-start: #4a6a42;
+  --xp-gradient-end: #7a9570;
 }
 
-/* Rose Gradient Theme */
-:root[data-theme="rose"] {
-  --xp-bg: #ffe4e6;
-  --xp-panel: #fff7f8;
-  --xp-text: #9f1239;
-  --xp-border: #f472b6;
-  --xp-border-light: #fbcfe8;
-  --xp-accent: #e11d48;
-  --xp-accent-light: #f43f5e;
-  --xp-gradient-start: #831843;
-  --xp-gradient-end: #f43f5e;
-}
-
-/* Dark Gradient Theme */
-:root[data-theme="dark"] {
-  --xp-bg: #0f0f1e;
-  --xp-panel: #1a1a2e;
-  --xp-text: #e8e8f0;
-  --xp-border: #2a2a4e;
-  --xp-border-light: #3a3a5e;
-  --xp-accent: #00d4ff;
-  --xp-accent-light: #00f0ff;
-  --xp-gradient-start: #0f0f1e;
-  --xp-gradient-end: #1a1a3e;
-}
-
-/* Default fallback */
+/* Default fallback - Sage & Earth */
 :root {
-  --xp-bg: #e3f2fd;
-  --xp-panel: #f8fbff;
-  --xp-text: #0d47a1;
-  --xp-border: #90caf9;
-  --xp-border-light: #e3f2fd;
-  --xp-accent: #1976d2;
-  --xp-accent-light: #42a5f5;
-  --xp-gradient-start: #1e3a8a;
-  --xp-gradient-end: #3b82f6;
+  --xp-bg: #f5f8f5;
+  --xp-panel: #faf9f6;
+  --xp-text: #6b7860;
+  --xp-border: #d4cfc4;
+  --xp-border-light: #e8e6e0;
+  --xp-accent: #9ba896;
+  --xp-accent-light: #b8b5a8;
+  --xp-gradient-start: #7a8a70;
+  --xp-gradient-end: #a2a896;
 }
 
 * { box-sizing: border-box; }
@@ -123,9 +97,9 @@ body {
   color: white;
   padding: 40px 30px;
   margin-bottom: 25px;
-  border-radius: 8px;
+  border-radius: 20px;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .hero h1 {
@@ -148,10 +122,10 @@ header {
 
 section {
   background-color: var(--xp-panel);
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 20px;
   margin-bottom: 25px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--xp-border-light);
 }
 
@@ -175,9 +149,9 @@ section > h2 {
 .card {
   background: linear-gradient(135deg, #ffffff 0%, #f9fbff 100%);
   border: 1px solid var(--xp-border);
-  border-radius: 8px;
+  border-radius: 14px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
 }
 
@@ -249,9 +223,9 @@ section > h2 {
 .grid-2 > div {
   background: linear-gradient(135deg, #ffffff 0%, #f9fbff 100%);
   border: 1px solid var(--xp-border);
-  border-radius: 8px;
+  border-radius: 14px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .grid-2 > div h2 {
@@ -267,13 +241,13 @@ section > h2 {
 .grid-4 {
   background: linear-gradient(135deg, #ffffff 0%, #f9fbff 100%);
   border: 1px solid var(--xp-border);
-  border-radius: 8px;
+  border-radius: 14px;
   padding: 20px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 15px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .estimator-form {
@@ -285,9 +259,9 @@ section > h2 {
 .estimator-section {
   background: linear-gradient(135deg, #ffffff 0%, #f9fbff 100%);
   border: 1px solid var(--xp-border);
-  border-radius: 8px;
+  border-radius: 14px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .estimator-section h3 {
@@ -321,7 +295,7 @@ section > h2 {
   gap: 12px;
   padding: 15px;
   border: 2px solid var(--xp-border);
-  border-radius: 6px;
+  border-radius: 10px;
   background: white;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -404,7 +378,7 @@ label small {
 input, select, textarea {
   padding: 10px 12px;
   border: 1px solid var(--xp-border);
-  border-radius: 6px;
+  border-radius: 10px;
   background-color: white;
   color: var(--xp-text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -422,7 +396,7 @@ input:focus, select:focus, textarea:focus {
 button, .btn {
   padding: 10px 18px;
   border: 1px solid var(--xp-border);
-  border-radius: 6px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #f5f7fa 0%, #f0f3f8 100%);
   color: var(--xp-text);
   cursor: pointer;
@@ -516,10 +490,10 @@ button:active, .btn:active {
 .breakdown-card {
   background: linear-gradient(135deg, #ffffff 0%, #f9fbff 100%);
   border: 1px solid var(--xp-border);
-  border-radius: 8px;
+  border-radius: 14px;
   padding: 16px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
 }
 
@@ -559,8 +533,8 @@ button:active, .btn:active {
   background: linear-gradient(135deg, #ffffff 0%, #f9fbff 100%);
   padding: 16px;
   border: 1px solid var(--xp-border);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
 }
 
