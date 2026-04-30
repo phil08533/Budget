@@ -16,6 +16,19 @@ $action = $_GET['action'] ?? '';
 
 $userId = (int) $_SESSION['user_id'];
 
+function calculateMonthlyValue(float $amount, string $frequency): float
+{
+    return match ($frequency) {
+        'daily' => $amount * 30.44,
+        'weekly' => $amount * 4.33,
+        'bi-weekly' => $amount * 2.167,
+        'monthly' => $amount,
+        'yearly' => $amount / 12,
+        'one-time' => 0,
+        default => 0,
+    };
+}
+
 switch ($action) {
     case 'dashboard':
         if ($method !== 'GET') {
@@ -395,17 +408,4 @@ function deleteBudget(int $userId): void
     $stmt->execute([$budgetId, $userId]);
 
     jsonResponse(['message' => 'Budget deleted']);
-}
-
-function calculateMonthlyValue(float $amount, string $frequency): float
-{
-    return match ($frequency) {
-        'daily' => $amount * 30.44,
-        'weekly' => $amount * 4.33,
-        'bi-weekly' => $amount * 2.167,
-        'monthly' => $amount,
-        'yearly' => $amount / 12,
-        'one-time' => 0,
-        default => 0,
-    };
 }
