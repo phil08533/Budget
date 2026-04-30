@@ -185,6 +185,7 @@ function createExpense(int $userId): void
     $body = readJsonBody();
     $category = trim((string) ($body['category'] ?? ''));
     $amount = toMoney($body['amount'] ?? null, 'amount');
+    $frequency = trim((string) ($body['frequency'] ?? 'one-time'));
     $date = trim((string) ($body['date'] ?? date('Y-m-d')));
 
     if ($category === '') {
@@ -192,8 +193,8 @@ function createExpense(int $userId): void
     }
 
     $pdo = db();
-    $stmt = $pdo->prepare('INSERT INTO expenses (user_id, category, amount, date) VALUES (?, ?, ?, ?)');
-    $stmt->execute([$userId, $category, $amount, $date]);
+    $stmt = $pdo->prepare('INSERT INTO expenses (user_id, category, amount, frequency, date) VALUES (?, ?, ?, ?, ?)');
+    $stmt->execute([$userId, $category, $amount, $frequency, $date]);
 
     jsonResponse(['message' => 'Expense added'], 201);
 }
@@ -204,11 +205,12 @@ function updateExpense(int $userId): void
     $expenseId = toInt($body['expense_id'] ?? null, 'expense_id');
     $category = trim((string) ($body['category'] ?? ''));
     $amount = toMoney($body['amount'] ?? null, 'amount');
+    $frequency = trim((string) ($body['frequency'] ?? 'one-time'));
     $date = trim((string) ($body['date'] ?? date('Y-m-d')));
 
     $pdo = db();
-    $stmt = $pdo->prepare('UPDATE expenses SET category = ?, amount = ?, date = ? WHERE expense_id = ? AND user_id = ?');
-    $stmt->execute([$category, $amount, $date, $expenseId, $userId]);
+    $stmt = $pdo->prepare('UPDATE expenses SET category = ?, amount = ?, frequency = ?, date = ? WHERE expense_id = ? AND user_id = ?');
+    $stmt->execute([$category, $amount, $frequency, $date, $expenseId, $userId]);
 
     jsonResponse(['message' => 'Expense updated']);
 }
