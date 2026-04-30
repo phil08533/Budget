@@ -109,7 +109,11 @@ if (!isset($_SESSION['user_id'])) {
 <body>
   <div class="unified-header">
     <div class="header-left">
-      <div class="header-logo">$</div>
+      <svg width="40" height="40" viewBox="0 0 40 40" style="fill: white;">
+        <path d="M20 2C20 2 10 10 10 20C10 27.7 15 35 20 35C25 35 30 27.7 30 20C30 10 20 2 20 2Z" fill="white"/>
+        <circle cx="20" cy="20" r="6" fill="#0a5fb5"/>
+        <path d="M12 28C12 28 8 32 5 35M28 28C28 28 32 32 35 35" stroke="white" stroke-width="2" fill="none"/>
+      </svg>
       <h1 class="header-title" style="margin: 0; color: white; font-size: 1.8rem;">Runway</h1>
     </div>
     <div class="header-right">

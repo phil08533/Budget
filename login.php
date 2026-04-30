@@ -151,7 +151,11 @@
 <body>
   <div class="auth-container">
     <div class="auth-header">
-      <div style="font-size: 3.5rem; margin: 0 auto 15px;">$</div>
+      <svg width="60" height="60" viewBox="0 0 40 40" style="fill: #0052cc; margin: 0 auto 15px; display: block;">
+        <path d="M20 2C20 2 10 10 10 20C10 27.7 15 35 20 35C25 35 30 27.7 30 20C30 10 20 2 20 2Z" fill="#0052cc"/>
+        <circle cx="20" cy="20" r="6" fill="white"/>
+        <path d="M12 28C12 28 8 32 5 35M28 28C28 28 32 32 35 35" stroke="#0052cc" stroke-width="2" fill="none"/>
+      </svg>
       <h1>Runway</h1>
       <p id="headerSubtitle">Login to your account</p>
     </div>
