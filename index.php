@@ -10,31 +10,46 @@ if (!isset($_SESSION['user_id'])) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FutureWorth - Financial Planning</title>
+  <title>Runway - Financial Planning</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
-    .header-top {
+    .unified-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
       background: linear-gradient(135deg, #0a5fb5 0%, #0a246a 100%);
       color: white;
-      padding: 15px 20px;
-      border-radius: 16px;
+      padding: 20px 30px;
+      border-radius: 0;
+      margin: -20px -20px 30px -20px;
     }
-    .user-info {
-      font-size: 0.9rem;
+    .header-left {
       display: flex;
       align-items: center;
       gap: 15px;
+    }
+    .header-logo {
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+    .header-title {
+      margin: 0;
+    }
+    .header-right {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    .user-greeting {
+      color: white;
+      font-size: 0.9rem;
     }
     .logout-btn {
       background: #cc3333;
       color: white;
       border: none;
       padding: 8px 16px;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
       font-size: 0.85rem;
@@ -44,16 +59,61 @@ if (!isset($_SESSION['user_id'])) {
       background: #bb2222;
       transform: translateY(-1px);
     }
+    #themeSelect {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(255,255,255,0.95);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    @media (min-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .tabs-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ddd;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #999;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      color: var(--xp-accent);
+      border-bottom-color: var(--xp-accent);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
-  <div class="header-top">
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <div style="width: 48px; height: 48px; font-size: 2.5rem; display: flex; align-items: center; justify-content: center;">$</div>
-      <h2 style="margin: 0; color: white; font-size: 1.5rem; font-weight: 700;">Runway</h2>
+  <div class="unified-header">
+    <div class="header-left">
+      <div class="header-logo">$</div>
+      <h1 class="header-title" style="margin: 0; color: white; font-size: 1.8rem;">Runway</h1>
     </div>
-    <div style="display: flex; gap: 15px; align-items: center; margin-left: auto;">
-      <select id="themeSelect" onchange="changeTheme(this.value)" style="padding: 6px 12px; border-radius: 6px; border: none; background: rgba(255,255,255,0.95); cursor: pointer; font-weight: 600;">
+    <div class="header-right">
+      <select id="themeSelect" onchange="changeTheme(this.value)">
         <option value="blue">Blue</option>
         <option value="sunset">Sunset</option>
         <option value="ocean">Ocean</option>
@@ -62,74 +122,74 @@ if (!isset($_SESSION['user_id'])) {
         <option value="rose">Rose</option>
         <option value="dark">Dark</option>
       </select>
-      <span style="color: white; font-size: 0.9rem;">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+      <span class="user-greeting">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
 
-  <header class="hero">
-    <div style="font-size: 3.5rem; margin-right: 20px;">$</div>
-    <div>
-      <h1>Runway</h1>
-      <p>Financial planning and budgeting dashboard</p>
-    </div>
-  </header>
-
   <main class="container">
-    <!-- FINANCIAL DASHBOARD -->
+    <!-- FINANCIAL OVERVIEW DASHBOARD -->
     <section>
-      <h2>Financial Dashboard <span class="help-icon" title="View your complete financial summary at a glance">?</span></h2>
-      <div class="cards" id="dashboard">
+      <h2>Financial Overview <span class="help-icon" title="Complete summary of your income, expenses, and savings">?</span></h2>
+      <div class="dashboard-grid">
         <article class="card">
-          <h3>Total Monthly Income</h3>
+          <h3>Monthly Income</h3>
           <p id="incomeTotal">$0.00</p>
-          <small style="color: #999; font-size: 0.8rem;">All recurring income sources</small>
+          <small>All income sources</small>
         </article>
         <article class="card">
-          <h3>Total Monthly Expenses</h3>
+          <h3>Monthly Expenses</h3>
           <p id="expenseTotal">$0.00</p>
-          <small style="color: #999; font-size: 0.8rem;">Average monthly spending</small>
+          <small>Total spending</small>
         </article>
         <article class="card highlight-card">
           <h3>Monthly Savings</h3>
           <p id="savingsTotal">$0.00</p>
-          <small style="color: #999; font-size: 0.8rem;">Money you're saving each month</small>
+          <small>Income minus expenses</small>
         </article>
         <article class="card highlight-card">
           <h3>Annual Savings</h3>
           <p id="yearlyTotal">$0.00</p>
-          <small style="color: #999; font-size: 0.8rem;">Total savings per year</small>
+          <small>Yearly total</small>
         </article>
       </div>
-    </section>
 
-    <!-- SAVINGS BREAKDOWN -->
-    <section>
-      <h2>Savings Overview <span class="help-icon" title="Your monthly and yearly savings potential">?</span></h2>
-      <div class="grid-2">
+      <!-- BREAKDOWN -->
+      <h3 style="margin-top: 30px; margin-bottom: 15px;">Expense Breakdown by Frequency</h3>
+      <div class="dashboard-grid">
         <div class="breakdown-card">
-          <h3>Monthly Savings</h3>
-          <p id="monthlySavings" style="color: var(--xp-accent); font-weight: bold;">$0.00/month</p>
-          <small id="monthlySavingsNote" style="color: #999;">Income minus expenses</small>
+          <h3>Daily</h3>
+          <p id="dailyExpenses" style="color: var(--xp-accent); font-weight: bold;">$0.00/day</p>
+          <small id="dailyExpenseCount">0 items</small>
         </div>
         <div class="breakdown-card">
-          <h3>Yearly Savings</h3>
-          <p id="yearlySavings" style="color: var(--xp-accent); font-weight: bold;">$0.00/year</p>
-          <small id="yearlySavingsNote" style="color: #999;">12 months of savings</small>
+          <h3>Weekly</h3>
+          <p id="weeklyExpenses" style="color: var(--xp-accent); font-weight: bold;">$0.00/week</p>
+          <small id="weeklyExpenseCount">0 items</small>
+        </div>
+        <div class="breakdown-card">
+          <h3>Monthly</h3>
+          <p id="monthlyExpenses" style="color: var(--xp-accent); font-weight: bold;">$0.00/month</p>
+          <small id="monthlyExpenseCount">0 items</small>
+        </div>
+        <div class="breakdown-card">
+          <h3>Yearly</h3>
+          <p id="yearlyExpenses" style="color: var(--xp-accent); font-weight: bold;">$0.00/year</p>
+          <small id="yearlyExpenseCount">0 items</small>
         </div>
       </div>
     </section>
 
     <!-- CURRENT SAVINGS & RUNWAY -->
     <section>
-      <h2>Your Financial Runway <span class="help-icon" title="How long can you live off your savings?">?</span></h2>
-      <p style="color: #666; margin: 0 0 1.5rem 0; font-size: 0.95rem;">Enter your current savings to see how many months you can survive on them if you stop earning money.</p>
+      <h2>Financial Runway <span class="help-icon" title="How long can you live off your savings?">?</span></h2>
+      <p style="color: #666; margin: 0 0 1.5rem 0; font-size: 0.95rem;">Enter your current savings to see how many months you can survive on them.</p>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px;">
         <div>
           <label>
-            <small style="color: var(--xp-accent); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;">Current Savings Balance ($)</small>
-            <input type="number" id="currentSavings" step="0.01" placeholder="0.00" value="0" style="padding: 12px; border: 1px solid var(--xp-border); border-radius: 6px; font-size: 0.95rem;" onchange="calculateRunway()" oninput="calculateRunway()" />
+            <small style="color: var(--xp-accent); font-weight: 700; text-transform: uppercase; font-size: 0.75rem;">Current Savings ($)</small>
+            <input type="number" id="currentSavings" step="0.01" placeholder="0.00" value="0" style="padding: 12px; border: 1px solid var(--xp-border); border-radius: 6px; font-size: 0.95rem; width: 100%;" onchange="calculateRunway()" oninput="calculateRunway()" />
           </label>
         </div>
         <div style="display: flex; align-items: flex-end;">
@@ -139,93 +199,123 @@ if (!isset($_SESSION['user_id'])) {
 
       <div id="runwayResults"></div>
     </section>
+
+    <!-- BUDGET TRACKING WITH TABS -->
     <section>
-      <h2>Budget Breakdown <span class="help-icon" title="See your income and expenses organized by frequency">?</span></h2>
-      <div class="grid-2">
-        <div class="breakdown-card">
-          <h3>Daily Expenses</h3>
-          <p id="dailyExpenses" style="color: var(--accent); font-weight: bold;">$0.00/day</p>
-          <small id="dailyExpenseCount" style="color: #999;">0 items</small>
-        </div>
-        <div class="breakdown-card">
-          <h3>Weekly Expenses</h3>
-          <p id="weeklyExpenses" style="color: var(--accent); font-weight: bold;">$0.00/week</p>
-          <small id="weeklyExpenseCount" style="color: #999;">0 items</small>
-        </div>
-        <div class="breakdown-card">
-          <h3>Monthly Expenses</h3>
-          <p id="monthlyExpenses" style="color: var(--accent); font-weight: bold;">$0.00/month</p>
-          <small id="monthlyExpenseCount" style="color: #999;">0 items</small>
-        </div>
-        <div class="breakdown-card">
-          <h3>Yearly Expenses</h3>
-          <p id="yearlyExpenses" style="color: var(--accent); font-weight: bold;">$0.00/year</p>
-          <small id="yearlyExpenseCount" style="color: #999;">0 items</small>
+      <h2>Budget Tracking <span class="help-icon" title="Add and manage your income, expenses, and savings goals">?</span></h2>
+
+      <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('income-tab')">Income</button>
+        <button class="tab-btn" onclick="switchTab('expense-tab')">Expenses</button>
+        <button class="tab-btn" onclick="switchTab('savings-tab')">Monthly Savings Goal</button>
+      </div>
+
+      <!-- INCOME TAB -->
+      <div id="income-tab" class="tab-content active">
+        <div class="grid-2">
+          <div>
+            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Add Income Source</h3>
+            <form id="incomeForm" class="stack">
+              <label>
+                <small style="color: #666; text-transform: uppercase;">Source Name</small>
+                <input name="source_name" placeholder="e.g., Salary, Freelance, Bonus" required />
+              </label>
+              <label>
+                <small style="color: #666; text-transform: uppercase;">Amount</small>
+                <input name="amount" type="number" step="0.01" placeholder="0.00" required />
+              </label>
+              <label>
+                <small style="color: #666; text-transform: uppercase;">Frequency</small>
+                <select name="frequency">
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="bi-weekly">Bi-Weekly</option>
+                  <option value="monthly" selected>Monthly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </label>
+              <button class="btn" type="submit">Add Income</button>
+            </form>
+          </div>
+          <div>
+            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Your Income Sources</h3>
+            <div id="incomeList" style="min-height: 100px;"></div>
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- INCOME & EXPENSE TRACKING -->
-    <section>
-      <h2>Budget Tracking <span class="help-icon" title="Add your income sources and track your spending here">?</span></h2>
-      <div class="grid-2">
-        <!-- ADD INCOME -->
-        <div>
-          <h2 style="border-bottom: 2px dashed var(--accent); margin-top: 0;">Add Income Source</h2>
-          <form id="incomeForm" class="stack">
-            <label>
-              <small style="color: #666; text-transform: uppercase;">Source Name <span class="help-icon" title="Name of your income source (e.g., Salary, Freelance, Bonuses)">?</span></small>
-              <input name="source_name" placeholder="e.g., Salary, Freelance, Bonus" required />
-            </label>
-            <label>
-              <small style="color: #666; text-transform: uppercase;">Amount <span class="help-icon" title="How much money per frequency period">?</span></small>
-              <input name="amount" type="number" step="0.01" placeholder="0.00" required />
-            </label>
-            <label>
-              <small style="color: #666; text-transform: uppercase;">How Often <span class="help-icon" title="Daily, Weekly, Bi-Weekly, Monthly, or Yearly">?</span></small>
-              <select name="frequency">
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="bi-weekly">Bi-Weekly</option>
-                <option value="monthly" selected>Monthly</option>
-                <option value="yearly">Yearly</option>
-              </select>
-            </label>
-            <button class="btn" type="submit">+ Add Income</button>
-          </form>
-          <div id="incomeList" style="margin-top: 1rem;"></div>
+      <!-- EXPENSE TAB -->
+      <div id="expense-tab" class="tab-content">
+        <div class="grid-2">
+          <div>
+            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Add Expense</h3>
+            <form id="expenseForm" class="stack">
+              <label>
+                <small style="color: #666; text-transform: uppercase;">Category</small>
+                <input name="category" placeholder="e.g., Groceries, Rent, Transportation" required />
+              </label>
+              <label>
+                <small style="color: #666; text-transform: uppercase;">Amount</small>
+                <input name="amount" type="number" step="0.01" placeholder="0.00" required />
+              </label>
+              <label>
+                <small style="color: #666; text-transform: uppercase;">Frequency</small>
+                <select name="frequency">
+                  <option value="one-time" selected>One-Time</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="bi-weekly">Bi-Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </label>
+              <label>
+                <small style="color: #666; text-transform: uppercase;">Date</small>
+                <input id="expenseDate" name="date" type="date" required />
+              </label>
+              <button class="btn" type="submit">Add Expense</button>
+            </form>
+          </div>
+          <div>
+            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Your Expenses</h3>
+            <div id="expenseList" style="min-height: 100px;"></div>
+          </div>
         </div>
+      </div>
 
-        <!-- ADD EXPENSE -->
-        <div>
-          <h2 style="border-bottom: 2px dashed var(--accent); margin-top: 0;">Add Expense</h2>
-          <form id="expenseForm" class="stack">
+      <!-- SAVINGS GOAL TAB -->
+      <div id="savings-tab" class="tab-content">
+        <div style="max-width: 600px;">
+          <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Monthly Savings Goal</h3>
+          <p style="color: #666; margin-bottom: 1.5rem;">Set a target for how much you want to save each month. Track your progress against your actual monthly savings.</p>
+
+          <form id="savingsGoalForm" class="stack">
             <label>
-              <small style="color: #666; text-transform: uppercase;">Category <span class="help-icon" title="What type of expense? (e.g., Groceries, Rent, Entertainment)">?</span></small>
-              <input name="category" placeholder="e.g., Groceries, Rent, Transportation" required />
+              <small style="color: #666; text-transform: uppercase;">Monthly Savings Target ($)</small>
+              <input type="number" id="savingsGoal" step="0.01" placeholder="0.00" style="padding: 12px; border: 1px solid var(--xp-border); border-radius: 6px; font-size: 0.95rem;" />
             </label>
-            <label>
-              <small style="color: #666; text-transform: uppercase;">Amount <span class="help-icon" title="How much did you spend or will spend">?</span></small>
-              <input name="amount" type="number" step="0.01" placeholder="0.00" required />
-            </label>
-            <label>
-              <small style="color: #666; text-transform: uppercase;">Frequency <span class="help-icon" title="Is this a one-time expense or does it repeat?">?</span></small>
-              <select name="frequency">
-                <option value="one-time" selected>One-Time</option>
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="bi-weekly">Bi-Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-              </select>
-            </label>
-            <label>
-              <small style="color: #666; text-transform: uppercase;">Date <span class="help-icon" title="When did or will this expense occur">?</span></small>
-              <input id="expenseDate" name="date" type="date" required />
-            </label>
-            <button class="btn" type="submit">+ Add Expense</button>
+            <button class="btn" type="button" onclick="saveSavingsGoal()">Save Goal</button>
           </form>
-          <div id="expenseList" style="margin-top: 1rem;"></div>
+
+          <div id="savingsGoalDisplay" style="margin-top: 2rem;">
+            <div class="cards">
+              <article class="card">
+                <h3>Your Goal</h3>
+                <p id="savingsGoalAmount" style="color: var(--xp-accent); font-weight: bold; font-size: 1.8rem;">$0.00</p>
+                <small>Target monthly savings</small>
+              </article>
+              <article class="card">
+                <h3>Actual Savings</h3>
+                <p id="savingsActualAmount" style="color: var(--xp-accent); font-weight: bold; font-size: 1.8rem;">$0.00</p>
+                <small>Current monthly savings</small>
+              </article>
+              <article class="card highlight-card">
+                <h3>Progress</h3>
+                <p id="savingsProgress" style="color: var(--xp-accent); font-weight: bold; font-size: 1.8rem;">0%</p>
+                <small>Towards your goal</small>
+              </article>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -242,6 +332,23 @@ if (!isset($_SESSION['user_id'])) {
   <!-- HELP TOOLTIP -->
   <div id="helpTooltip" class="tooltip" style="display: none;"></div>
 
+  <script>
+    function switchTab(tabId) {
+      // Hide all tabs
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach(tab => tab.classList.remove('active'));
+
+      // Remove active from all buttons
+      const btns = document.querySelectorAll('.tab-btn');
+      btns.forEach(btn => btn.classList.remove('active'));
+
+      // Show selected tab
+      document.getElementById(tabId).classList.add('active');
+
+      // Add active to button
+      event.target.classList.add('active');
+    }
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

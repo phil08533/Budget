@@ -112,6 +112,9 @@ async function loadDashboard() {
   $('#monthlySavings').textContent = money(monthlySavings) + '/month';
   $('#yearlySavings').textContent = money(yearlySavings) + '/year';
 
+  // Update savings goal display
+  updateSavingsGoalDisplay();
+
   // Calculate and display breakdown by frequency
   const breakdown = { daily: 0, weekly: 0, monthly: 0, yearly: 0 };
   const counts = { daily: 0, weekly: 0, monthly: 0, yearly: 0 };
@@ -341,7 +344,29 @@ document.addEventListener('click', async (e) => {
   }
 });
 
+// Savings goal functions
+function saveSavingsGoal() {
+  const goal = parseFloat(document.getElementById('savingsGoal').value) || 0;
+  localStorage.setItem('runway-savings-goal', goal);
+  updateSavingsGoalDisplay();
+}
+
+function updateSavingsGoalDisplay() {
+  const goal = parseFloat(localStorage.getItem('runway-savings-goal')) || 0;
+  const actual = parseFloat($('#savingsTotal').textContent.replace('$', '').replace(/,/g, '')) || 0;
+  const progress = goal > 0 ? ((actual / goal) * 100).toFixed(1) : 0;
+
+  $('#savingsGoalAmount').textContent = money(goal);
+  $('#savingsActualAmount').textContent = money(actual);
+  $('#savingsProgress').textContent = Math.min(progress, 100) + '%';
+}
+
 loadDashboard().catch((err) => {
   console.error(err);
   alert('Unable to load dashboard. Check that:\n1. PHP server is running\n2. MySQL database is set up\n3. Database credentials in db.php are correct');
+});
+
+// Update savings goal display on dashboard load
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(updateSavingsGoalDisplay, 500);
 });

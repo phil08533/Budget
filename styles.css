@@ -190,12 +190,12 @@ section > h2 {
   transition: all 0.3s ease;
 }
 
-.card:nth-child(1) { background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%); border-color: #FF69B4; }
-.card:nth-child(2) { background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%); border-color: #4169E1; }
-.card:nth-child(3) { background: linear-gradient(135deg, #98FF98 0%, #90EE90 100%); border-color: #32CD32; }
-.card:nth-child(4) { background: linear-gradient(135deg, #FFD700 0%, #FFEC8B 100%); border-color: #FFA500; }
-.card:nth-child(5) { background: linear-gradient(135deg, #DDA0DD 0%, #EE82EE 100%); border-color: #DA70D6; }
-.card:nth-child(6) { background: linear-gradient(135deg, #F0E68C 0%, #FFFACD 100%); border-color: #DAA520; }
+.card:nth-child(1) { background: linear-gradient(135deg, #f5e6d3 0%, #e8dcc8 100%); border-color: #d4c0b0; }
+.card:nth-child(2) { background: linear-gradient(135deg, #e3f1f5 0%, #d9e8f0 100%); border-color: #c0d8e8; }
+.card:nth-child(3) { background: linear-gradient(135deg, #e6f5e6 0%, #d9f0d9 100%); border-color: #c0e0c0; }
+.card:nth-child(4) { background: linear-gradient(135deg, #f5f1e3 0%, #ede8d9 100%); border-color: #ddd0c0; }
+.card:nth-child(5) { background: linear-gradient(135deg, #f5e3f1 0%, #ede9f0 100%); border-color: #dcc0d8; }
+.card:nth-child(6) { background: linear-gradient(135deg, #f5f0e3 0%, #ede8d9 100%); border-color: #ddd0c0; }
 
 .card:hover {
   transform: translateY(-2px);
@@ -539,11 +539,11 @@ button:active, .btn:active {
   transition: all 0.3s ease;
 }
 
-.breakdown-card:nth-child(1) { background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%); border-color: #FF69B4; }
-.breakdown-card:nth-child(2) { background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%); border-color: #4169E1; }
-.breakdown-card:nth-child(3) { background: linear-gradient(135deg, #98FF98 0%, #90EE90 100%); border-color: #32CD32; }
-.breakdown-card:nth-child(4) { background: linear-gradient(135deg, #FFD700 0%, #FFEC8B 100%); border-color: #FFA500; }
-.breakdown-card:nth-child(5) { background: linear-gradient(135deg, #DDA0DD 0%, #EE82EE 100%); border-color: #DA70D6; }
+.breakdown-card:nth-child(1) { background: linear-gradient(135deg, #f5e6d3 0%, #e8dcc8 100%); border-color: #d4c0b0; }
+.breakdown-card:nth-child(2) { background: linear-gradient(135deg, #e3f1f5 0%, #d9e8f0 100%); border-color: #c0d8e8; }
+.breakdown-card:nth-child(3) { background: linear-gradient(135deg, #e6f5e6 0%, #d9f0d9 100%); border-color: #c0e0c0; }
+.breakdown-card:nth-child(4) { background: linear-gradient(135deg, #f5f1e3 0%, #ede8d9 100%); border-color: #ddd0c0; }
+.breakdown-card:nth-child(5) { background: linear-gradient(135deg, #f5e3f1 0%, #ede9f0 100%); border-color: #dcc0d8; }
 
 .breakdown-card:hover {
   transform: translateY(-2px);
