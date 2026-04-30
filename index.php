@@ -49,14 +49,7 @@ if (!isset($_SESSION['user_id'])) {
 <body>
   <div class="header-top">
     <div style="display: flex; align-items: center; gap: 15px;">
-      <svg class="logo" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <style>.logo-fill { fill: white; }</style>
-        </defs>
-        <circle cx="24" cy="28" r="12" class="logo-fill"/>
-        <path d="M24 8c-4 0-7.2 2.4-8 5.6v2.4c0 2.4 3.6 4 8 4s8-1.6 8-4v-2.4C31.2 10.4 28 8 24 8zm0 6c-2.2 0-4-0.9-4-2s1.8-2 4-2s4 0.9 4 2S26.2 14 24 14z" class="logo-fill"/>
-        <path d="M20 22c-2 1-3.2 2.8-3.2 4.8v4.8c0 2.4 3.6 4 8 4s8-1.6 8-4v-4.8c0-2-1.2-3.8-3.2-4.8" stroke="white" stroke-width="1.5" fill="none"/>
-      </svg>
+      <div style="width: 48px; height: 48px; font-size: 2.5rem; display: flex; align-items: center; justify-content: center;">$</div>
       <h2 style="margin: 0; color: white; font-size: 1.5rem; font-weight: 700;">Runway</h2>
     </div>
     <div style="display: flex; gap: 15px; align-items: center; margin-left: auto;">
@@ -75,14 +68,7 @@ if (!isset($_SESSION['user_id'])) {
   </div>
 
   <header class="hero">
-    <svg class="logo" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="width: 64px; height: 64px;">
-      <defs>
-        <style>.logo-fill { fill: white; }</style>
-      </defs>
-      <circle cx="24" cy="28" r="12" class="logo-fill"/>
-      <path d="M24 8c-4 0-7.2 2.4-8 5.6v2.4c0 2.4 3.6 4 8 4s8-1.6 8-4v-2.4C31.2 10.4 28 8 24 8zm0 6c-2.2 0-4-0.9-4-2s1.8-2 4-2s4 0.9 4 2S26.2 14 24 14z" class="logo-fill"/>
-      <path d="M20 22c-2 1-3.2 2.8-3.2 4.8v4.8c0 2.4 3.6 4 8 4s8-1.6 8-4v-4.8c0-2-1.2-3.8-3.2-4.8" stroke="white" stroke-width="1.5" fill="none"/>
-    </svg>
+    <div style="font-size: 3.5rem; margin-right: 20px;">$</div>
     <div>
       <h1>Runway</h1>
       <p>Financial planning and budgeting dashboard</p>
@@ -111,9 +97,26 @@ if (!isset($_SESSION['user_id'])) {
         </article>
         <article class="card highlight-card">
           <h3>Annual Savings</h3>
-          <p id="netTotal">$0.00</p>
-          <small style="color: #999; font-size: 0.8rem;">Total savings if you maintain this rate</small>
+          <p id="yearlyTotal">$0.00</p>
+          <small style="color: #999; font-size: 0.8rem;">Total savings per year</small>
         </article>
+      </div>
+    </section>
+
+    <!-- SAVINGS BREAKDOWN -->
+    <section>
+      <h2>Savings Overview <span class="help-icon" title="Your monthly and yearly savings potential">?</span></h2>
+      <div class="grid-2">
+        <div class="breakdown-card">
+          <h3>Monthly Savings</h3>
+          <p id="monthlySavings" style="color: var(--xp-accent); font-weight: bold;">$0.00/month</p>
+          <small id="monthlySavingsNote" style="color: #999;">Income minus expenses</small>
+        </div>
+        <div class="breakdown-card">
+          <h3>Yearly Savings</h3>
+          <p id="yearlySavings" style="color: var(--xp-accent); font-weight: bold;">$0.00/year</p>
+          <small id="yearlySavingsNote" style="color: #999;">12 months of savings</small>
+        </div>
       </div>
     </section>
 

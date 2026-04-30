@@ -101,7 +101,16 @@ async function loadDashboard() {
   $('#incomeTotal').textContent = money(data.summary.income_total);
   $('#expenseTotal').textContent = money(data.summary.expense_total);
   $('#savingsTotal').textContent = money(data.summary.savings_total);
-  $('#netTotal').textContent = money(data.summary.net_monthly_balance);
+  $('#netTotal').textContent = money(data.summary.savings_total);
+
+  // Calculate yearly savings
+  const monthlySavings = data.summary.savings_total;
+  const yearlySavings = monthlySavings * 12;
+  $('#yearlyTotal').textContent = money(yearlySavings);
+
+  // Update savings breakdown
+  $('#monthlySavings').textContent = money(monthlySavings) + '/month';
+  $('#yearlySavings').textContent = money(yearlySavings) + '/year';
 
   // Calculate and display breakdown by frequency
   const breakdown = { daily: 0, weekly: 0, monthly: 0, yearly: 0 };

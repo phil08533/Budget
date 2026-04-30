@@ -151,14 +151,7 @@
 <body>
   <div class="auth-container">
     <div class="auth-header">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="width: 64px; height: 64px; margin: 0 auto 15px;">
-        <defs>
-          <style>.logo-fill { fill: #0052cc; }</style>
-        </defs>
-        <circle cx="24" cy="28" r="12" class="logo-fill"/>
-        <path d="M24 8c-4 0-7.2 2.4-8 5.6v2.4c0 2.4 3.6 4 8 4s8-1.6 8-4v-2.4C31.2 10.4 28 8 24 8zm0 6c-2.2 0-4-0.9-4-2s1.8-2 4-2s4 0.9 4 2S26.2 14 24 14z" class="logo-fill"/>
-        <path d="M20 22c-2 1-3.2 2.8-3.2 4.8v4.8c0 2.4 3.6 4 8 4s8-1.6 8-4v-4.8c0-2-1.2-3.8-3.2-4.8" stroke="#0052cc" stroke-width="1.5" fill="none"/>
-      </svg>
+      <div style="font-size: 3.5rem; margin: 0 auto 15px;">$</div>
       <h1>Runway</h1>
       <p id="headerSubtitle">Login to your account</p>
     </div>
