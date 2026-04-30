@@ -1,0 +1,28 @@
+{
+  "name": "Runway - Financial Planning",
+  "short_name": "Runway",
+  "description": "A simple financial planning and budgeting app to track income, expenses, and savings goals.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#0a5fb5",
+  "background_color": "#ffffff",
+  "orientation": "portrait-or-landscape",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg width='192' height='192' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Crect fill='%230a5fb5' width='40' height='40'/%3E%3Cpath d='M20 2C20 2 10 10 10 20C10 27.7 15 35 20 35C25 35 30 27.7 30 20C30 10 20 2 20 2Z' fill='white'/%3E%3Ccircle cx='20' cy='20' r='6' fill='%230a5fb5'/%3E%3Cpath d='M12 28C12 28 8 32 5 35M28 28C28 28 32 32 35 35' stroke='white' stroke-width='2' fill='none'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,%3Csvg width='540' height='720' viewBox='0 0 540 720' xmlns='http://www.w3.org/2000/svg'%3E%3Crect fill='%23f5f1e8' width='540' height='720'/%3E%3C/svg%3E",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ]
+}
