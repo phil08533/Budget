@@ -342,6 +342,99 @@ if (!isset($_SESSION['user_id'])) {
   <!-- HELP TOOLTIP -->
   <div id="helpTooltip" class="tooltip" style="display: none;"></div>
 
+  <!-- EDIT INCOME MODAL -->
+  <div id="editIncomeModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; overflow: auto;">
+    <div style="background: white; margin: 50px auto; padding: 30px; border-radius: 12px; max-width: 400px;">
+      <h2>Edit Income</h2>
+      <form id="editIncomeForm" class="stack">
+        <input type="hidden" id="editIncomeId" />
+        <label>
+          <small style="color: #666; text-transform: uppercase;">Source Name</small>
+          <input id="editIncomeName" placeholder="e.g., Salary" required />
+        </label>
+        <label>
+          <small style="color: #666; text-transform: uppercase;">Amount</small>
+          <input id="editIncomeAmount" type="number" step="0.01" placeholder="0.00" required />
+        </label>
+        <label>
+          <small style="color: #666; text-transform: uppercase;">Frequency</small>
+          <select id="editIncomeFrequency">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="bi-weekly">Bi-Weekly</option>
+            <option value="monthly" selected>Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </label>
+        <button class="btn" type="submit">Save Changes</button>
+        <button class="btn" type="button" onclick="closeEditIncomeModal()" style="background: #999;">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT EXPENSE MODAL -->
+  <div id="editExpenseModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; overflow: auto;">
+    <div style="background: white; margin: 50px auto; padding: 30px; border-radius: 12px; max-width: 400px;">
+      <h2>Edit Expense</h2>
+      <form id="editExpenseForm" class="stack">
+        <input type="hidden" id="editExpenseId" />
+        <label>
+          <small style="color: #666; text-transform: uppercase;">Category</small>
+          <input id="editExpenseCategory" placeholder="e.g., Groceries" required />
+        </label>
+        <label>
+          <small style="color: #666; text-transform: uppercase;">Amount</small>
+          <input id="editExpenseAmount" type="number" step="0.01" placeholder="0.00" required />
+        </label>
+        <label>
+          <small style="color: #666; text-transform: uppercase;">Frequency</small>
+          <select id="editExpenseFrequency">
+            <option value="one-time" selected>One-Time</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="bi-weekly">Bi-Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </label>
+        <label>
+          <small style="color: #666; text-transform: uppercase;">Date</small>
+          <input id="editExpenseDate" type="date" required />
+        </label>
+        <button class="btn" type="submit">Save Changes</button>
+        <button class="btn" type="button" onclick="closeEditExpenseModal()" style="background: #999;">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT SAVINGS GOAL MODAL -->
+  <div id="editSavingsGoalModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; overflow: auto;">
+    <div style="background: white; margin: 50px auto; padding: 30px; border-radius: 12px; max-width: 400px;">
+      <h2>Edit Savings Goal</h2>
+      <form id="editSavingsGoalForm" class="stack">
+        <input type="hidden" id="editSavingsGoalId" />
+        <label>
+          <small style="color: #666; text-transform: uppercase;">Goal Name</small>
+          <input id="editSavingsGoalName" placeholder="e.g., Emergency Fund" required />
+        </label>
+        <label>
+          <small style="color: #666; text-transform: uppercase;">Monthly Amount</small>
+          <input id="editSavingsGoalAmount" type="number" step="0.01" placeholder="0.00" required />
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="editSavingsGoalHasGain" onchange="toggleEditGainInput()" />
+          <small style="color: #666; text-transform: uppercase;">Include annual gain %</small>
+        </label>
+        <label id="editGainLabel" style="display: none;">
+          <small style="color: #666; text-transform: uppercase;">Annual Gain %</small>
+          <input id="editSavingsGoalGain" type="number" step="0.01" placeholder="0.00" />
+        </label>
+        <button class="btn" type="submit">Save Changes</button>
+        <button class="btn" type="button" onclick="closeEditSavingsGoalModal()" style="background: #999;">Cancel</button>
+      </form>
+    </div>
+  </div>
+
   <script>
     function switchTab(tabId) {
       // Hide all tabs

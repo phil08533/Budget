@@ -126,7 +126,10 @@ async function loadDashboard() {
         </div>
         <div style="text-align: right;">
           <div style="font-weight: bold; color: var(--xp-accent);">${money(item.amount)} (${money(monthlyVal)}/mo)</div>
-          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem;" data-delete-income="${item.income_id}">Delete</button>
+          <div style="display: flex; gap: 0.3rem;">
+            <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem;" data-edit-income="${item.income_id}">Edit</button>
+            <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem; background: #c84b4b; border-color: #c84b4b;" data-delete-income="${item.income_id}">Delete</button>
+          </div>
         </div>
       `;
       incomeList.appendChild(div);
@@ -150,7 +153,10 @@ async function loadDashboard() {
         </div>
         <div style="text-align: right;">
           <div style="font-weight: bold; color: var(--xp-accent);">${money(item.amount)} (${money(monthlyVal)}/mo)</div>
-          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem;" data-delete-expense="${item.expense_id}">Delete</button>
+          <div style="display: flex; gap: 0.3rem;">
+            <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem;" data-edit-expense="${item.expense_id}">Edit</button>
+            <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem; background: #c84b4b; border-color: #c84b4b;" data-delete-expense="${item.expense_id}">Delete</button>
+          </div>
         </div>
       `;
       expenseList.appendChild(div);
@@ -358,16 +364,23 @@ function loadSavingsGoals() {
     list.innerHTML = '<p style="color: #999; text-align: center;">No savings goals yet</p>';
   } else {
     goals.forEach((goal) => {
+      const yearlyBase = goal.amount * 12;
+      const interest = yearlyBase * (goal.gain / 100);
+      const yearlyTotal = yearlyBase + interest;
+
       const div = document.createElement('div');
       div.className = 'history-item';
       div.innerHTML = `
         <div>
           <h4 style="margin: 0;">${goal.name}</h4>
-          <p style="margin: 0.25rem 0 0 0; color: #666;">${goal.gain > 0 ? goal.gain + '% annual gain' : 'No gain'}</p>
+          <p style="margin: 0.25rem 0 0 0; color: var(--xp-accent); font-weight: bold;">${money(goal.amount)}/month</p>
+          <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.85rem;">
+            Yearly: ${money(yearlyBase)}${goal.gain > 0 ? ` + ${money(interest)} interest (${goal.gain}%)` : ''} = ${money(yearlyTotal)}
+          </p>
         </div>
         <div style="text-align: right;">
-          <div style="font-weight: bold; color: var(--xp-accent);">${money(goal.amount)}/month</div>
-          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem;" data-delete-goal="${goal.id}">Delete</button>
+          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-bottom: 0.5rem;" data-edit-goal="${goal.id}">Edit</button>
+          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; background: #c84b4b; border-color: #c84b4b;" data-delete-goal="${goal.id}">Delete</button>
         </div>
       `;
       list.appendChild(div);
@@ -400,14 +413,134 @@ function updateSavingsGoalsSummary() {
   }
 }
 
-// Delete savings goal event delegation
-document.addEventListener('click', (e) => {
+// Edit/Delete event delegation
+document.addEventListener('click', async (e) => {
   const deleteGoalId = e.target.dataset.deleteGoal;
+  const editGoalId = e.target.dataset.editGoal;
+  const editIncomeId = e.target.dataset.editIncome;
+  const editExpenseId = e.target.dataset.editExpense;
+
   if (deleteGoalId && confirm('Delete this savings goal?')) {
     let goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
     goals = goals.filter(g => g.id != deleteGoalId);
     localStorage.setItem('savings-goals', JSON.stringify(goals));
     loadSavingsGoals();
+  }
+
+  if (editGoalId) {
+    let goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
+    const goal = goals.find(g => g.id == editGoalId);
+    if (goal) {
+      document.getElementById('editSavingsGoalId').value = goal.id;
+      document.getElementById('editSavingsGoalName').value = goal.name;
+      document.getElementById('editSavingsGoalAmount').value = goal.amount;
+      document.getElementById('editSavingsGoalHasGain').checked = goal.gain > 0;
+      document.getElementById('editSavingsGoalGain').value = goal.gain;
+      document.getElementById('editGainLabel').style.display = goal.gain > 0 ? 'flex' : 'none';
+      document.getElementById('editSavingsGoalModal').style.display = 'block';
+    }
+  }
+
+  if (editIncomeId) {
+    const data = await api('dashboard');
+    const income = data.income.find(i => i.income_id == editIncomeId);
+    if (income) {
+      document.getElementById('editIncomeId').value = income.income_id;
+      document.getElementById('editIncomeName').value = income.source_name;
+      document.getElementById('editIncomeAmount').value = income.amount;
+      document.getElementById('editIncomeFrequency').value = income.frequency;
+      document.getElementById('editIncomeModal').style.display = 'block';
+    }
+  }
+
+  if (editExpenseId) {
+    const data = await api('dashboard');
+    const expense = data.expenses.find(e => e.expense_id == editExpenseId);
+    if (expense) {
+      document.getElementById('editExpenseId').value = expense.expense_id;
+      document.getElementById('editExpenseCategory').value = expense.category;
+      document.getElementById('editExpenseAmount').value = expense.amount;
+      document.getElementById('editExpenseFrequency').value = expense.frequency;
+      document.getElementById('editExpenseDate').value = expense.date;
+      document.getElementById('editExpenseModal').style.display = 'block';
+    }
+  }
+});
+
+// Edit modal functions
+function closeEditIncomeModal() {
+  document.getElementById('editIncomeModal').style.display = 'none';
+}
+
+function closeEditExpenseModal() {
+  document.getElementById('editExpenseModal').style.display = 'none';
+}
+
+function closeEditSavingsGoalModal() {
+  document.getElementById('editSavingsGoalModal').style.display = 'none';
+}
+
+function toggleEditGainInput() {
+  const checkbox = document.getElementById('editSavingsGoalHasGain');
+  const gainLabel = document.getElementById('editGainLabel');
+  gainLabel.style.display = checkbox.checked ? 'flex' : 'none';
+}
+
+// Edit form submissions
+document.getElementById('editIncomeForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    const incomeId = parseInt(document.getElementById('editIncomeId').value);
+    const sourceName = document.getElementById('editIncomeName').value;
+    const amount = parseFloat(document.getElementById('editIncomeAmount').value);
+    const frequency = document.getElementById('editIncomeFrequency').value;
+
+    await api('income', 'PUT', { income_id: incomeId, source_name: sourceName, amount, frequency });
+    closeEditIncomeModal();
+    await loadDashboard();
+  } catch (err) {
+    alert('Error saving income: ' + err.message);
+  }
+});
+
+document.getElementById('editExpenseForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    const expenseId = parseInt(document.getElementById('editExpenseId').value);
+    const category = document.getElementById('editExpenseCategory').value;
+    const amount = parseFloat(document.getElementById('editExpenseAmount').value);
+    const frequency = document.getElementById('editExpenseFrequency').value;
+    const date = document.getElementById('editExpenseDate').value;
+
+    await api('expense', 'PUT', { expense_id: expenseId, category, amount, frequency, date });
+    closeEditExpenseModal();
+    await loadDashboard();
+  } catch (err) {
+    alert('Error saving expense: ' + err.message);
+  }
+});
+
+document.getElementById('editSavingsGoalForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  try {
+    const goalId = parseInt(document.getElementById('editSavingsGoalId').value);
+    const name = document.getElementById('editSavingsGoalName').value;
+    const amount = parseFloat(document.getElementById('editSavingsGoalAmount').value);
+    const hasGain = document.getElementById('editSavingsGoalHasGain').checked;
+    const gain = hasGain ? parseFloat(document.getElementById('editSavingsGoalGain').value) || 0 : 0;
+
+    let goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
+    const goal = goals.find(g => g.id == goalId);
+    if (goal) {
+      goal.name = name;
+      goal.amount = amount;
+      goal.gain = gain;
+      localStorage.setItem('savings-goals', JSON.stringify(goals));
+      closeEditSavingsGoalModal();
+      loadSavingsGoals();
+    }
+  } catch (err) {
+    alert('Error saving goal: ' + err.message);
   }
 });
 
@@ -462,7 +595,10 @@ async function viewBudgetDetails(budgetId) {
       });
     }
 
-    content.innerHTML = html;
+    content.innerHTML = html + `<div style="margin-top: 1.5rem; display: flex; gap: 0.5rem;">
+      <button class="btn" style="flex: 1;" onclick="loadBudgetForEditing(${budgetId})">Load & Edit</button>
+      <button class="btn" style="flex: 1; background: #999;" onclick="closeBudgetModal()">Close</button>
+    </div>`;
     modal.style.display = 'block';
   } catch (err) {
     alert('Error loading budget: ' + err.message);
@@ -471,6 +607,44 @@ async function viewBudgetDetails(budgetId) {
 
 function closeBudgetModal() {
   $('#budgetModal').style.display = 'none';
+}
+
+async function loadBudgetForEditing(budgetId) {
+  try {
+    const data = await api('budgets', 'GET');
+    const budget = data.budgets.find(b => b.budget_id == budgetId);
+    if (!budget) {
+      alert('Budget not found');
+      return;
+    }
+
+    const budgetData = JSON.parse(budget.budget_data || '{"income":[],"expenses":[]}');
+
+    // Add income items
+    for (const income of budgetData.income) {
+      await api('income', 'POST', {
+        source_name: income.source_name,
+        amount: income.amount,
+        frequency: income.frequency
+      });
+    }
+
+    // Add expense items
+    for (const expense of budgetData.expenses) {
+      await api('expense', 'POST', {
+        category: expense.category,
+        amount: expense.amount,
+        frequency: expense.frequency,
+        date: expense.date
+      });
+    }
+
+    closeBudgetModal();
+    await loadDashboard();
+    alert('Budget loaded! You can now edit these items.');
+  } catch (err) {
+    alert('Error loading budget: ' + err.message);
+  }
 }
 
 loadDashboard().catch((err) => {
