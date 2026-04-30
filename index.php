@@ -147,41 +147,17 @@ if (!isset($_SESSION['user_id'])) {
           <small>Total spending</small>
         </article>
         <article class="card highlight-card">
-          <h3>Monthly Savings</h3>
+          <h3>Monthly Income After Expenses</h3>
           <p id="savingsTotal">$0.00</p>
           <small>Income minus expenses</small>
         </article>
         <article class="card highlight-card">
-          <h3>Annual Savings</h3>
+          <h3>Annual Income</h3>
           <p id="yearlyTotal">$0.00</p>
           <small>Yearly total</small>
         </article>
       </div>
 
-      <!-- BREAKDOWN -->
-      <h3 style="margin-top: 30px; margin-bottom: 15px;">Expense Breakdown by Frequency</h3>
-      <div class="dashboard-grid">
-        <div class="breakdown-card">
-          <h3>Daily</h3>
-          <p id="dailyExpenses" style="color: var(--xp-accent); font-weight: bold;">$0.00/day</p>
-          <small id="dailyExpenseCount">0 items</small>
-        </div>
-        <div class="breakdown-card">
-          <h3>Weekly</h3>
-          <p id="weeklyExpenses" style="color: var(--xp-accent); font-weight: bold;">$0.00/week</p>
-          <small id="weeklyExpenseCount">0 items</small>
-        </div>
-        <div class="breakdown-card">
-          <h3>Monthly</h3>
-          <p id="monthlyExpenses" style="color: var(--xp-accent); font-weight: bold;">$0.00/month</p>
-          <small id="monthlyExpenseCount">0 items</small>
-        </div>
-        <div class="breakdown-card">
-          <h3>Yearly</h3>
-          <p id="yearlyExpenses" style="color: var(--xp-accent); font-weight: bold;">$0.00/year</p>
-          <small id="yearlyExpenseCount">0 items</small>
-        </div>
-      </div>
     </section>
 
     <!-- CURRENT SAVINGS & RUNWAY -->
@@ -287,38 +263,49 @@ if (!isset($_SESSION['user_id'])) {
         </div>
       </div>
 
-      <!-- SAVINGS GOAL TAB -->
+      <!-- SAVINGS GOALS TAB -->
       <div id="savings-tab" class="tab-content">
-        <div style="max-width: 600px;">
-          <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Monthly Savings Goal</h3>
-          <p style="color: #666; margin-bottom: 1.5rem;">Set a target for how much you want to save each month. Track your progress against your actual monthly savings.</p>
+        <div class="grid-2">
+          <div>
+            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Add Savings Goal</h3>
+            <form id="savingsGoalForm" class="stack">
+              <label>
+                <small style="color: #666; text-transform: uppercase;">Goal Name</small>
+                <input name="goal_name" placeholder="e.g., Emergency Fund, Vacation" required />
+              </label>
+              <label>
+                <small style="color: #666; text-transform: uppercase;">Monthly Amount</small>
+                <input name="amount" type="number" step="0.01" placeholder="0.00" required />
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" name="hasGain" id="hasGainCheckbox" onchange="toggleGainInput()" />
+                <small style="color: #666; text-transform: uppercase;">Include annual gain %</small>
+              </label>
+              <label id="gainLabel" style="display: none;">
+                <small style="color: #666; text-transform: uppercase;">Annual Gain %</small>
+                <input name="gain" type="number" step="0.01" placeholder="0.00" />
+              </label>
+              <button class="btn" type="submit">Add Goal</button>
+            </form>
+          </div>
+          <div>
+            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Your Savings Goals</h3>
+            <div id="savingsGoalsList" style="min-height: 100px;"></div>
+          </div>
+        </div>
 
-          <form id="savingsGoalForm" class="stack">
-            <label>
-              <small style="color: #666; text-transform: uppercase;">Monthly Savings Target ($)</small>
-              <input type="number" id="savingsGoal" step="0.01" placeholder="0.00" style="padding: 12px; border: 1px solid var(--xp-border); border-radius: 6px; font-size: 0.95rem;" />
-            </label>
-            <button class="btn" type="button" onclick="saveSavingsGoal()">Save Goal</button>
-          </form>
-
-          <div id="savingsGoalDisplay" style="margin-top: 2rem;">
-            <div class="cards">
-              <article class="card">
-                <h3>Your Goal</h3>
-                <p id="savingsGoalAmount" style="color: var(--xp-accent); font-weight: bold; font-size: 1.8rem;">$0.00</p>
-                <small>Target monthly savings</small>
-              </article>
-              <article class="card">
-                <h3>Actual Savings</h3>
-                <p id="savingsActualAmount" style="color: var(--xp-accent); font-weight: bold; font-size: 1.8rem;">$0.00</p>
-                <small>Current monthly savings</small>
-              </article>
-              <article class="card highlight-card">
-                <h3>Progress</h3>
-                <p id="savingsProgress" style="color: var(--xp-accent); font-weight: bold; font-size: 1.8rem;">0%</p>
-                <small>Towards your goal</small>
-              </article>
-            </div>
+        <div style="margin-top: 2rem;">
+          <div class="cards">
+            <article class="card">
+              <h3>Total Monthly Savings</h3>
+              <p id="totalMonthlySavings" style="color: var(--xp-accent); font-weight: bold; font-size: 1.8rem;">$0.00</p>
+              <small>Sum of all goals</small>
+            </article>
+            <article class="card highlight-card">
+              <h3>Annual Savings</h3>
+              <p id="totalAnnualSavings" style="color: var(--xp-accent); font-weight: bold; font-size: 1.8rem;">$0.00</p>
+              <small>Yearly total with gains</small>
+            </article>
           </div>
         </div>
       </div>

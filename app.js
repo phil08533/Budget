@@ -107,39 +107,9 @@ async function loadDashboard() {
   const yearlySavings = monthlySavings * 12;
   $('#yearlyTotal').textContent = money(yearlySavings);
 
-  // Update savings goal display
-  updateSavingsGoalDisplay();
+  // Load savings goals
+  loadSavingsGoals();
 
-  // Calculate and display breakdown by frequency
-  const breakdown = { daily: 0, weekly: 0, monthly: 0, yearly: 0 };
-  const counts = { daily: 0, weekly: 0, monthly: 0, yearly: 0 };
-
-  data.expenses.forEach((expense) => {
-    const monthlyVal = calculateMonthlyValue(expense.amount, expense.frequency);
-
-    if (expense.frequency === 'daily') {
-      breakdown.daily += expense.amount;
-      counts.daily++;
-    } else if (expense.frequency === 'weekly') {
-      breakdown.weekly += expense.amount;
-      counts.weekly++;
-    } else if (expense.frequency === 'monthly' || expense.frequency === 'bi-weekly') {
-      breakdown.monthly += monthlyVal;
-      counts.monthly++;
-    } else if (expense.frequency === 'yearly') {
-      breakdown.yearly += expense.amount;
-      counts.yearly++;
-    }
-  });
-
-  $('#dailyExpenses').textContent = money(breakdown.daily) + '/day';
-  $('#dailyExpenseCount').textContent = counts.daily + (counts.daily === 1 ? ' item' : ' items');
-  $('#weeklyExpenses').textContent = money(breakdown.weekly) + '/week';
-  $('#weeklyExpenseCount').textContent = counts.weekly + (counts.weekly === 1 ? ' item' : ' items');
-  $('#monthlyExpenses').textContent = money(breakdown.monthly) + '/month';
-  $('#monthlyExpenseCount').textContent = counts.monthly + (counts.monthly === 1 ? ' item' : ' items');
-  $('#yearlyExpenses').textContent = money(breakdown.yearly) + '/year';
-  $('#yearlyExpenseCount').textContent = counts.yearly + (counts.yearly === 1 ? ' item' : ' items');
 
   // Render income list
   const incomeList = $('#incomeList');
@@ -339,29 +309,95 @@ document.addEventListener('click', async (e) => {
   }
 });
 
-// Savings goal functions
-function saveSavingsGoal() {
-  const goal = parseFloat(document.getElementById('savingsGoal').value) || 0;
-  localStorage.setItem('runway-savings-goal', goal);
-  updateSavingsGoalDisplay();
+// Savings goals functions
+function toggleGainInput() {
+  const checkbox = document.getElementById('hasGainCheckbox');
+  const gainLabel = document.getElementById('gainLabel');
+  gainLabel.style.display = checkbox.checked ? 'flex' : 'none';
 }
 
-function updateSavingsGoalDisplay() {
-  const goal = parseFloat(localStorage.getItem('runway-savings-goal')) || 0;
-  const actual = parseFloat($('#savingsTotal').textContent.replace('$', '').replace(/,/g, '')) || 0;
-  const progress = goal > 0 ? ((actual / goal) * 100).toFixed(1) : 0;
+$('#savingsGoalForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    const form = new FormData(e.target);
+    const data = Object.fromEntries(form);
+    const goal = {
+      id: Date.now(),
+      name: data.goal_name,
+      amount: parseFloat(data.amount) || 0,
+      gain: data.hasGain === 'on' ? (parseFloat(data.gain) || 0) : 0
+    };
 
-  $('#savingsGoalAmount').textContent = money(goal);
-  $('#savingsActualAmount').textContent = money(actual);
-  $('#savingsProgress').textContent = Math.min(progress, 100) + '%';
+    let goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
+    goals.push(goal);
+    localStorage.setItem('savings-goals', JSON.stringify(goals));
+
+    e.target.reset();
+    document.getElementById('hasGainCheckbox').checked = false;
+    document.getElementById('gainLabel').style.display = 'none';
+    loadSavingsGoals();
+  } catch (err) {
+    alert('Error adding savings goal: ' + err.message);
+  }
+});
+
+function loadSavingsGoals() {
+  const goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
+  const list = $('#savingsGoalsList');
+  list.innerHTML = '';
+
+  if (goals.length === 0) {
+    list.innerHTML = '<p style="color: #999; text-align: center;">No savings goals yet</p>';
+  } else {
+    goals.forEach((goal) => {
+      const div = document.createElement('div');
+      div.className = 'history-item';
+      div.innerHTML = `
+        <div>
+          <h4 style="margin: 0;">${goal.name}</h4>
+          <p style="margin: 0.25rem 0 0 0; color: #666;">${goal.gain > 0 ? goal.gain + '% annual gain' : 'No gain'}</p>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-weight: bold; color: var(--xp-accent);">${money(goal.amount)}/month</div>
+          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem;" data-delete-goal="${goal.id}">Delete</button>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  updateSavingsGoalsSummary();
 }
+
+function updateSavingsGoalsSummary() {
+  const goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
+
+  let totalMonthly = 0;
+  let totalAnnual = 0;
+
+  goals.forEach((goal) => {
+    totalMonthly += goal.amount;
+    const yearlyBase = goal.amount * 12;
+    const gainAmount = yearlyBase * (goal.gain / 100);
+    totalAnnual += yearlyBase + gainAmount;
+  });
+
+  $('#totalMonthlySavings').textContent = money(totalMonthly);
+  $('#totalAnnualSavings').textContent = money(totalAnnual);
+}
+
+// Delete savings goal event delegation
+document.addEventListener('click', (e) => {
+  const deleteGoalId = e.target.dataset.deleteGoal;
+  if (deleteGoalId && confirm('Delete this savings goal?')) {
+    let goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
+    goals = goals.filter(g => g.id != deleteGoalId);
+    localStorage.setItem('savings-goals', JSON.stringify(goals));
+    loadSavingsGoals();
+  }
+});
 
 loadDashboard().catch((err) => {
   console.error(err);
   alert('Unable to load dashboard. Check that:\n1. PHP server is running\n2. MySQL database is set up\n3. Database credentials in db.php are correct');
-});
-
-// Update savings goal display on dashboard load
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(updateSavingsGoalDisplay, 500);
 });
