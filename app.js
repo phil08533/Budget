@@ -1,7 +1,5 @@
 const $ = (sel) => document.querySelector(sel);
 
-let latestSimulationPayload = null;
-
 function logout() {
   if (confirm('Are you sure you want to logout?')) {
     fetch('auth.php?action=logout', { method: 'POST' })
@@ -22,11 +20,8 @@ function changeTheme(theme) {
 function calculateRunway() {
   const savingsInput = document.getElementById('currentSavings');
   const savings = parseFloat(savingsInput.value) || 0;
-
-  // Get current monthly expenses from the dashboard
   const expenseText = document.getElementById('expenseTotal').textContent;
   const monthlyExpenses = parseFloat(expenseText.replace('$', '').replace(/,/g, '')) || 0;
-
   const resultsDiv = document.getElementById('runwayResults');
 
   if (savings <= 0) {
@@ -72,19 +67,23 @@ function calculateRunway() {
         <small style="color: #999;">Your current savings balance</small>
       </article>
     </div>
-
-    <div style="background: linear-gradient(135deg, rgba(0, 82, 204, 0.1) 0%, rgba(19, 102, 230, 0.1) 100%); border: 1px solid var(--xp-border); border-radius: 8px; padding: 20px; margin-top: 20px;">
-      <h4 style="margin: 0 0 10px 0; color: var(--xp-accent);">💡 What This Means</h4>
-      <p style="margin: 0; color: #666; line-height: 1.6;">
-        If you stop earning money today and only spend on your current expenses, you have approximately <strong>${months} months</strong> of financial security.
-        This is your emergency fund runway. To increase it, either increase your monthly savings or reduce your expenses.
-      </p>
-    </div>
   `;
 }
 
 function money(value) {
   return `$${Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function calculateMonthlyValue(amount, frequency) {
+  switch (frequency) {
+    case 'daily': return amount * 30.44;
+    case 'weekly': return amount * 4.33;
+    case 'bi-weekly': return amount * 2.167;
+    case 'monthly': return amount;
+    case 'yearly': return amount / 12;
+    case 'one-time': return 0;
+    default: return 0;
+  }
 }
 
 async function api(action, method = 'GET', body = null) {
@@ -95,77 +94,61 @@ async function api(action, method = 'GET', body = null) {
   return res.json();
 }
 
-function calculateMonthlyValue(amount, frequency) {
-  switch (frequency) {
-    case 'daily': return amount * 30.44;
-    case 'weekly': return amount * 4.33;
-    case 'bi-weekly': return amount * 2.17;
-    case 'monthly': return amount;
-    case 'yearly': return amount / 12;
-    case 'one-time': return 0;
-    default: return 0;
-  }
-}
-
-function getFrequencyLabel(frequency) {
-  const labels = {
-    'daily': '📅 Daily',
-    'weekly': '📆 Weekly',
-    'bi-weekly': '📆 Bi-Weekly',
-    'monthly': '📋 Monthly',
-    'yearly': '📅 Yearly',
-    'one-time': '🔔 One-Time'
-  };
-  return labels[frequency] || frequency;
-}
-
 async function loadDashboard() {
   const data = await api('dashboard');
 
-  // Update summary cards
+  // Update summary cards with monthly values
   $('#incomeTotal').textContent = money(data.summary.income_total);
   $('#expenseTotal').textContent = money(data.summary.expense_total);
   $('#savingsTotal').textContent = money(data.summary.savings_total);
   $('#netTotal').textContent = money(data.summary.net_monthly_balance);
 
-  // Calculate breakdown by frequency
-  let dailyExpenses = 0, weeklyExpenses = 0, monthlyExpenses = 0, yearlyExpenses = 0;
-  let dailyCount = 0, weeklyCount = 0, monthlyCount = 0, yearlyCount = 0;
+  // Calculate and display breakdown by frequency
+  const breakdown = { daily: 0, weekly: 0, monthly: 0, yearly: 0 };
+  const counts = { daily: 0, weekly: 0, monthly: 0, yearly: 0 };
 
-  if (data.expenses.length) {
-    data.expenses.forEach((item) => {
-      const monthlyVal = calculateMonthlyValue(item.amount, item.frequency);
-      if (item.frequency === 'daily') { dailyExpenses += item.amount; dailyCount++; }
-      else if (item.frequency === 'weekly') { weeklyExpenses += item.amount; weeklyCount++; }
-      else if (item.frequency === 'monthly' || item.frequency === 'bi-weekly') { monthlyExpenses += monthlyVal; monthlyCount++; }
-      else if (item.frequency === 'yearly') { yearlyExpenses += item.amount; yearlyCount++; }
-      else if (item.frequency === 'one-time') { monthlyExpenses += 0; } // one-time doesn't affect recurring
-    });
-  }
+  data.expenses.forEach((expense) => {
+    const monthlyVal = calculateMonthlyValue(expense.amount, expense.frequency);
 
-  $('#dailyExpenses').textContent = money(dailyExpenses) + '/day';
-  $('#dailyExpenseCount').textContent = dailyCount + (dailyCount === 1 ? ' item' : ' items');
-  $('#weeklyExpenses').textContent = money(weeklyExpenses) + '/week';
-  $('#weeklyExpenseCount').textContent = weeklyCount + (weeklyCount === 1 ? ' item' : ' items');
-  $('#monthlyExpenses').textContent = money(monthlyExpenses) + '/month';
-  $('#monthlyExpenseCount').textContent = monthlyCount + (monthlyCount === 1 ? ' item' : ' items');
-  $('#yearlyExpenses').textContent = money(yearlyExpenses) + '/year';
-  $('#yearlyExpenseCount').textContent = yearlyCount + (yearlyCount === 1 ? ' item' : ' items');
+    if (expense.frequency === 'daily') {
+      breakdown.daily += expense.amount;
+      counts.daily++;
+    } else if (expense.frequency === 'weekly') {
+      breakdown.weekly += expense.amount;
+      counts.weekly++;
+    } else if (expense.frequency === 'monthly' || expense.frequency === 'bi-weekly') {
+      breakdown.monthly += monthlyVal;
+      counts.monthly++;
+    } else if (expense.frequency === 'yearly') {
+      breakdown.yearly += expense.amount;
+      counts.yearly++;
+    }
+  });
+
+  $('#dailyExpenses').textContent = money(breakdown.daily) + '/day';
+  $('#dailyExpenseCount').textContent = counts.daily + (counts.daily === 1 ? ' item' : ' items');
+  $('#weeklyExpenses').textContent = money(breakdown.weekly) + '/week';
+  $('#weeklyExpenseCount').textContent = counts.weekly + (counts.weekly === 1 ? ' item' : ' items');
+  $('#monthlyExpenses').textContent = money(breakdown.monthly) + '/month';
+  $('#monthlyExpenseCount').textContent = counts.monthly + (counts.monthly === 1 ? ' item' : ' items');
+  $('#yearlyExpenses').textContent = money(breakdown.yearly) + '/year';
+  $('#yearlyExpenseCount').textContent = counts.yearly + (counts.yearly === 1 ? ' item' : ' items');
 
   // Render income list
   const incomeList = $('#incomeList');
   incomeList.innerHTML = '';
   if (data.income.length) {
     data.income.forEach((item) => {
+      const monthlyVal = calculateMonthlyValue(item.amount, item.frequency);
       const div = document.createElement('div');
       div.className = 'history-item';
       div.innerHTML = `
         <div>
           <h4 style="margin: 0;">${item.source_name}</h4>
-          <p style="margin: 0.25rem 0 0 0; color: #666;">${getFrequencyLabel(item.frequency)}</p>
+          <p style="margin: 0.25rem 0 0 0; color: #666;">${item.frequency}</p>
         </div>
         <div style="text-align: right;">
-          <div style="font-weight: bold; color: var(--accent);">${money(item.amount)}</div>
+          <div style="font-weight: bold; color: var(--xp-accent);">${money(item.amount)} (${money(monthlyVal)}/mo)</div>
           <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem;" data-delete-income="${item.income_id}">Delete</button>
         </div>
       `;
@@ -180,15 +163,16 @@ async function loadDashboard() {
   expenseList.innerHTML = '';
   if (data.expenses.length) {
     data.expenses.forEach((item) => {
+      const monthlyVal = calculateMonthlyValue(item.amount, item.frequency);
       const div = document.createElement('div');
       div.className = 'history-item';
       div.innerHTML = `
         <div>
           <h4 style="margin: 0;">${item.category}</h4>
-          <p style="margin: 0.25rem 0 0 0; color: #666;">${getFrequencyLabel(item.frequency)} • ${item.date}</p>
+          <p style="margin: 0.25rem 0 0 0; color: #666;">${item.frequency} • ${item.date}</p>
         </div>
         <div style="text-align: right;">
-          <div style="font-weight: bold; color: var(--accent);">${money(item.amount)}</div>
+          <div style="font-weight: bold; color: var(--xp-accent);">${money(item.amount)} (${money(monthlyVal)}/mo)</div>
           <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem;" data-delete-expense="${item.expense_id}">Delete</button>
         </div>
       `;
@@ -198,42 +182,17 @@ async function loadDashboard() {
     expenseList.innerHTML = '<p style="color: #999; text-align: center;">No expenses yet</p>';
   }
 
-  // Render scenarios
-  const scenarioList = $('#scenarioList');
-  scenarioList.innerHTML = '';
-  if (!data.scenarios.length) {
-    scenarioList.innerHTML = '<p style="color: #999; text-align: center; padding: 2rem;">No saved scenarios yet. Run a simulation and save it!</p>';
-    return;
-  }
-
-  data.scenarios.forEach((scenario) => {
-    const item = document.createElement('div');
-    item.className = 'history-item';
-    item.innerHTML = `
-      <div>
-        <h4 style="margin: 0;">${scenario.saved_name}</h4>
-        <p style="margin: 0.25rem 0 0 0; color: #666;">${scenario.type} • ${scenario.duration_months} months • ${scenario.expected_return_rate}%</p>
-      </div>
-      <div style="display: flex; gap: 0.5rem;">
-        <button class="btn secondary" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;" data-edit="${scenario.scenario_id}">Edit</button>
-        <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; background: #c84b4b; border-color: #c84b4b;" data-delete="${scenario.scenario_id}">Delete</button>
-      </div>
-    `;
-    item.style.justifyContent = 'space-between';
-    item.style.alignItems = 'center';
-    scenarioList.appendChild(item);
-  });
+  // Update budget list
+  loadBudgets();
 }
 
 // Help tooltip system
 document.addEventListener('mouseover', (e) => {
   const helpIcon = e.target.closest('.help-icon');
   if (!helpIcon) return;
-
   const tooltip = $('#helpTooltip');
   tooltip.textContent = helpIcon.getAttribute('title');
   tooltip.style.display = 'block';
-
   const rect = helpIcon.getBoundingClientRect();
   tooltip.style.left = (rect.left + rect.width / 2 - 100) + 'px';
   tooltip.style.top = (rect.top - 40) + 'px';
@@ -245,20 +204,8 @@ document.addEventListener('mouseout', (e) => {
   }
 });
 
-// Toggle return rate input based on strategy selection
-function toggleReturnRate() {
-  const type = document.querySelector('input[name="type"]:checked').value;
-  const returnRateLabel = document.getElementById('returnRateLabel');
-  if (type === 'invest') {
-    returnRateLabel.style.display = 'flex';
-  } else {
-    returnRateLabel.style.display = 'none';
-  }
-}
-
-// Initialize theme and other setup
+// Initialize theme and setup
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize theme from localStorage
   const savedTheme = localStorage.getItem('futureworth-theme') || 'blue';
   document.documentElement.setAttribute('data-theme', savedTheme);
   const themeSelect = document.getElementById('themeSelect');
@@ -266,14 +213,10 @@ document.addEventListener('DOMContentLoaded', () => {
     themeSelect.value = savedTheme;
   }
 
-  // Set today's date in date input
   const expenseDateInput = document.getElementById('expenseDate');
   if (expenseDateInput) {
     expenseDateInput.valueAsDate = new Date();
   }
-
-  // Initialize return rate visibility
-  toggleReturnRate();
 });
 
 $('#incomeForm').addEventListener('submit', async (e) => {
@@ -304,79 +247,62 @@ $('#expenseForm').addEventListener('submit', async (e) => {
   }
 });
 
-$('#simulateForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  try {
-    const payload = Object.fromEntries(new FormData(e.target));
-    latestSimulationPayload = payload;
-    const res = await api('simulate', 'POST', payload);
+// Budgets (save/load budget snapshots)
+async function saveBudget() {
+  const name = prompt('Budget name:');
+  if (!name) return;
 
-    const resultsDiv = $('#projectionResults');
-    resultsDiv.innerHTML = `
-      <div class="cards">
-        <article class="card">
-          <h3>Projected Savings</h3>
-          <p>${money(res.projection.future_savings)}</p>
-          <small style="color: #999;">After ${res.projection.duration_months} months @ ${res.projection.monthly_amount}/month</small>
-        </article>
-        <article class="card">
-          <h3>Projected Investment</h3>
-          <p>${money(res.projection.future_investment)}</p>
-          <small style="color: #999;">With ${res.projection.expected_return_rate}% annual return</small>
-        </article>
-      </div>
-    `;
+  const data = await api('dashboard');
+  const budgetData = {
+    name: name,
+    income: data.income,
+    expenses: data.expenses,
+    summary: data.summary,
+    date: new Date().toISOString().split('T')[0]
+  };
+
+  try {
+    await api('budget', 'POST', budgetData);
+    alert('Budget saved!');
+    await loadBudgets();
   } catch (err) {
-    alert('Error running simulation: ' + err.message);
+    alert('Error saving budget: ' + err.message);
   }
-});
+}
 
-$('#saveScenario').addEventListener('click', async () => {
+async function loadBudgets() {
   try {
-    const formPayload = Object.fromEntries(new FormData($('#simulateForm')));
-    const payload = latestSimulationPayload || formPayload;
-    await api('scenario', 'POST', payload);
-    alert('Scenario saved!');
-    await loadDashboard();
-  } catch (err) {
-    alert('Error saving scenario: ' + err.message);
-  }
-});
+    const data = await api('budgets', 'GET');
+    const list = $('#budgetList');
+    list.innerHTML = '';
 
-$('#loadHistoryBtn').addEventListener('click', async () => {
-  const monthInput = $('#historyMonth').value;
-  if (!monthInput) {
-    alert('Please select a month');
-    return;
-  }
-  try {
-    const data = await api('history', 'GET');
-    const historyList = $('#historyList');
-
-    if (!data.history || !data.history.length) {
-      historyList.innerHTML = '<p style="color: #999; text-align: center;">No historical data available</p>';
+    if (!data.budgets || data.budgets.length === 0) {
+      list.innerHTML = '<p style="color: #999; text-align: center;">No saved budgets. Create one to compare.</p>';
       return;
     }
 
-    historyList.innerHTML = data.history.map(h => `
-      <div class="history-item">
+    data.budgets.forEach((budget) => {
+      const item = document.createElement('div');
+      item.className = 'history-item';
+      item.innerHTML = `
         <div>
-          <h4 style="margin: 0;">📅 ${h.snapshot_date}</h4>
-          <p style="margin: 0.25rem 0 0 0; color: #666;">Income: ${money(h.total_income)} | Expenses: ${money(h.total_expenses)} | Savings: ${money(h.monthly_savings)}</p>
+          <h4 style="margin: 0;">${budget.budget_name}</h4>
+          <p style="margin: 0.25rem 0 0 0; color: #666;">Income: ${money(budget.total_income)} | Expenses: ${money(budget.total_expenses)} | Savings: ${money(budget.monthly_savings)} (${budget.created_at})</p>
         </div>
-      </div>
-    `).join('');
+        <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; background: #c84b4b; border-color: #c84b4b;" data-delete-budget="${budget.budget_id}">Delete</button>
+      `;
+      list.appendChild(item);
+    });
   } catch (err) {
-    alert('Error loading history: ' + err.message);
+    console.error('Error loading budgets:', err);
   }
-});
+}
 
-// Event delegation for income/expense/scenario deletions
+// Event delegation for deletions
 document.addEventListener('click', async (e) => {
   const deleteIncomeId = e.target.dataset.deleteIncome;
   const deleteExpenseId = e.target.dataset.deleteExpense;
-  const deleteScenarioId = e.target.dataset.delete;
-  const editScenarioId = e.target.dataset.edit;
+  const deleteBudgetId = e.target.dataset.deleteBudget;
 
   if (deleteIncomeId && confirm('Delete this income source?')) {
     try {
@@ -396,26 +322,10 @@ document.addEventListener('click', async (e) => {
     }
   }
 
-  if (deleteScenarioId && confirm('Delete this scenario?')) {
+  if (deleteBudgetId && confirm('Delete this budget?')) {
     try {
-      await api('scenario', 'DELETE', { scenario_id: deleteScenarioId });
-      await loadDashboard();
-    } catch (err) {
-      alert('Error: ' + err.message);
-    }
-  }
-
-  if (editScenarioId) {
-    const savedName = prompt('New scenario name:');
-    if (!savedName) return;
-    try {
-      const payload = Object.fromEntries(new FormData($('#simulateForm')));
-      await api('scenario', 'PUT', {
-        scenario_id: editScenarioId,
-        saved_name: savedName,
-        ...payload,
-      });
-      await loadDashboard();
+      await api('budget', 'DELETE', { budget_id: deleteBudgetId });
+      await loadBudgets();
     } catch (err) {
       alert('Error: ' + err.message);
     }

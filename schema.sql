@@ -68,6 +68,19 @@ CREATE TABLE IF NOT EXISTS budget_history (
   INDEX idx_user_date (user_id, snapshot_date)
 );
 
+CREATE TABLE IF NOT EXISTS budgets (
+  budget_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  budget_name VARCHAR(120) NOT NULL,
+  total_income DECIMAL(10,2) NOT NULL,
+  total_expenses DECIMAL(10,2) NOT NULL,
+  monthly_savings DECIMAL(10,2) NOT NULL,
+  budget_data LONGTEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+  INDEX idx_user_created (user_id, created_at)
+);
+
 INSERT INTO users (username, email, password_hash)
 VALUES ('demo', 'demo@example.com', '$2y$10$ABCDEFGHIJKLMNOPQRSTU')
 ON DUPLICATE KEY UPDATE username = VALUES(username);

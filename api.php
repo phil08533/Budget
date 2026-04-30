@@ -58,6 +58,21 @@ switch ($action) {
         };
         break;
 
+    case 'budget':
+        match ($method) {
+            'POST' => saveBudget($userId),
+            'DELETE' => deleteBudget($userId),
+            default => jsonResponse(['error' => 'Method not allowed'], 405),
+        };
+        break;
+
+    case 'budgets':
+        if ($method !== 'GET') {
+            jsonResponse(['error' => 'Method not allowed'], 405);
+        }
+        getBudgets($userId);
+        break;
+
     default:
         jsonResponse(['error' => 'Unknown action'], 404);
 }
@@ -70,7 +85,7 @@ function getDashboard(int $userId): void
     $incomeStmt->execute([$userId]);
     $income = $incomeStmt->fetchAll();
 
-    $expenseStmt = $pdo->prepare('SELECT expense_id, category, amount, date FROM expenses WHERE user_id = ? ORDER BY date DESC, expense_id DESC');
+    $expenseStmt = $pdo->prepare('SELECT expense_id, category, amount, frequency, date FROM expenses WHERE user_id = ? ORDER BY date DESC, expense_id DESC');
     $expenseStmt->execute([$userId]);
     $expenses = $expenseStmt->fetchAll();
 
@@ -84,8 +99,15 @@ function getDashboard(int $userId): void
     $scenarioStmt->execute([$userId]);
     $scenarios = $scenarioStmt->fetchAll();
 
-    $incomeTotal = array_reduce($income, fn ($carry, $row) => $carry + (float) $row['amount'], 0.0);
-    $expenseTotal = array_reduce($expenses, fn ($carry, $row) => $carry + (float) $row['amount'], 0.0);
+    $incomeTotal = 0;
+    foreach ($income as $row) {
+        $incomeTotal += calculateMonthlyValue((float) $row['amount'], $row['frequency']);
+    }
+
+    $expenseTotal = 0;
+    foreach ($expenses as $row) {
+        $expenseTotal += calculateMonthlyValue((float) $row['amount'], $row['frequency']);
+    }
 
     jsonResponse([
         'income' => $income,
@@ -302,4 +324,88 @@ function deleteScenario(int $userId): void
     }
 
     jsonResponse(['message' => 'Scenario deleted']);
+}
+
+function saveBudget(int $userId): void
+{
+    $body = readJsonBody();
+    $name = trim((string) ($body['name'] ?? 'Budget'));
+    $income = $body['income'] ?? [];
+    $expenses = $body['expenses'] ?? [];
+    $summary = $body['summary'] ?? [];
+
+    if (!is_array($income) || !is_array($expenses)) {
+        jsonResponse(['error' => 'Invalid budget data'], 422);
+    }
+
+    $pdo = db();
+
+    // Check budget count
+    $countStmt = $pdo->prepare('SELECT COUNT(*) as cnt FROM budgets WHERE user_id = ?');
+    $countStmt->execute([$userId]);
+    $count = (int) $countStmt->fetch()['cnt'];
+
+    if ($count >= 3) {
+        jsonResponse(['error' => 'Maximum 3 budgets allowed. Delete one to save a new one.'], 422);
+    }
+
+    // Calculate totals
+    $totalIncome = 0;
+    foreach ($income as $item) {
+        $totalIncome += calculateMonthlyValue((float) ($item['amount'] ?? 0), $item['frequency'] ?? 'monthly');
+    }
+
+    $totalExpenses = 0;
+    foreach ($expenses as $item) {
+        $totalExpenses += calculateMonthlyValue((float) ($item['amount'] ?? 0), $item['frequency'] ?? 'monthly');
+    }
+
+    $stmt = $pdo->prepare(
+        'INSERT INTO budgets (user_id, budget_name, total_income, total_expenses, monthly_savings, budget_data) VALUES (?, ?, ?, ?, ?, ?)'
+    );
+    $stmt->execute([
+        $userId,
+        $name,
+        round($totalIncome, 2),
+        round($totalExpenses, 2),
+        round($totalIncome - $totalExpenses, 2),
+        json_encode(['income' => $income, 'expenses' => $expenses])
+    ]);
+
+    jsonResponse(['message' => 'Budget saved'], 201);
+}
+
+function getBudgets(int $userId): void
+{
+    $pdo = db();
+    $stmt = $pdo->prepare('SELECT budget_id, budget_name, total_income, total_expenses, monthly_savings, created_at FROM budgets WHERE user_id = ? ORDER BY created_at DESC');
+    $stmt->execute([$userId]);
+    $budgets = $stmt->fetchAll();
+
+    jsonResponse(['budgets' => $budgets]);
+}
+
+function deleteBudget(int $userId): void
+{
+    $body = readJsonBody();
+    $budgetId = toInt($body['budget_id'] ?? null, 'budget_id');
+
+    $pdo = db();
+    $stmt = $pdo->prepare('DELETE FROM budgets WHERE budget_id = ? AND user_id = ?');
+    $stmt->execute([$budgetId, $userId]);
+
+    jsonResponse(['message' => 'Budget deleted']);
+}
+
+function calculateMonthlyValue(float $amount, string $frequency): float
+{
+    return match ($frequency) {
+        'daily' => $amount * 30.44,
+        'weekly' => $amount * 4.33,
+        'bi-weekly' => $amount * 2.167,
+        'monthly' => $amount,
+        'yearly' => $amount / 12,
+        'one-time' => 0,
+        default => 0,
+    };
 }
