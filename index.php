@@ -323,8 +323,8 @@ if (!isset($_SESSION['user_id'])) {
 
     <!-- SAVED BUDGETS -->
     <section>
-      <h2>Saved Budgets <span class="help-icon" title="Save and compare your budget snapshots (max 3)">?</span></h2>
-      <p style="color: #666; margin: 0 0 1.5rem 0; font-size: 0.95rem;">Save your current budget to compare different scenarios. You can save up to 3 budgets.</p>
+      <h2>Saved Budgets <span class="help-icon" title="Save and compare your budget snapshots">?</span></h2>
+      <p style="color: #666; margin: 0 0 1.5rem 0; font-size: 0.95rem;">Save your current budget to compare different scenarios.</p>
       <button class="btn" style="margin-bottom: 1.5rem;" onclick="saveBudget()">Save Current Budget</button>
       <div class="history" id="budgetList"></div>
     </section>

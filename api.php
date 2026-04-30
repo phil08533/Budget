@@ -355,15 +355,6 @@ function saveBudget(int $userId): void
 
     $pdo = db();
 
-    // Check budget count
-    $countStmt = $pdo->prepare('SELECT COUNT(*) as cnt FROM budgets WHERE user_id = ?');
-    $countStmt->execute([$userId]);
-    $count = (int) $countStmt->fetch()['cnt'];
-
-    if ($count >= 3) {
-        jsonResponse(['error' => 'Maximum 3 budgets allowed. Delete one to save a new one.'], 422);
-    }
-
     // Calculate totals
     $totalIncome = 0;
     foreach ($income as $item) {
