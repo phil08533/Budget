@@ -266,7 +266,10 @@ async function loadBudgets() {
           <h4 style="margin: 0;">${budget.budget_name}</h4>
           <p style="margin: 0.25rem 0 0 0; color: #666;">Income: ${money(budget.total_income)} | Expenses: ${money(budget.total_expenses)} | Savings: ${money(budget.monthly_savings)} (${budget.created_at})</p>
         </div>
-        <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; background: #c84b4b; border-color: #c84b4b;" data-delete-budget="${budget.budget_id}">Delete</button>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;" data-view-budget="${budget.budget_id}">View</button>
+          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; background: #c84b4b; border-color: #c84b4b;" data-delete-budget="${budget.budget_id}">Delete</button>
+        </div>
       `;
       list.appendChild(item);
     });
@@ -275,11 +278,12 @@ async function loadBudgets() {
   }
 }
 
-// Event delegation for deletions
+// Event delegation for deletions and budget viewing
 document.addEventListener('click', async (e) => {
   const deleteIncomeId = e.target.dataset.deleteIncome;
   const deleteExpenseId = e.target.dataset.deleteExpense;
   const deleteBudgetId = e.target.dataset.deleteBudget;
+  const viewBudgetId = e.target.dataset.viewBudget;
 
   if (deleteIncomeId && confirm('Delete this income source?')) {
     try {
@@ -306,6 +310,10 @@ document.addEventListener('click', async (e) => {
     } catch (err) {
       alert('Error: ' + err.message);
     }
+  }
+
+  if (viewBudgetId) {
+    viewBudgetDetails(viewBudgetId);
   }
 });
 
@@ -384,6 +392,12 @@ function updateSavingsGoalsSummary() {
 
   $('#totalMonthlySavings').textContent = money(totalMonthly);
   $('#totalAnnualSavings').textContent = money(totalAnnual);
+
+  // Update overview cards
+  if ($('#overviewMonthlySavings')) {
+    $('#overviewMonthlySavings').textContent = money(totalMonthly);
+    $('#overviewAnnualSavings').textContent = money(totalAnnual);
+  }
 }
 
 // Delete savings goal event delegation
@@ -396,6 +410,68 @@ document.addEventListener('click', (e) => {
     loadSavingsGoals();
   }
 });
+
+// Budget detail modal functions
+async function viewBudgetDetails(budgetId) {
+  try {
+    const data = await api('budgets', 'GET');
+    const budget = data.budgets.find(b => b.budget_id == budgetId);
+    if (!budget) {
+      alert('Budget not found');
+      return;
+    }
+
+    const budgetData = JSON.parse(budget.budget_data || '{"income":[],"expenses":[]}');
+    const modal = $('#budgetModal');
+    const title = $('#budgetModalTitle');
+    const content = $('#budgetModalContent');
+
+    title.textContent = budget.budget_name;
+
+    let html = `<p style="color: #666; margin-bottom: 1.5rem;">Created: ${budget.created_at}</p>`;
+    html += `<div class="cards" style="margin-bottom: 1.5rem;">
+      <div class="card">
+        <h4 style="margin: 0 0 0.5rem 0;">Total Income</h4>
+        <p style="font-weight: bold; color: var(--xp-accent);">${money(budget.total_income)}</p>
+      </div>
+      <div class="card">
+        <h4 style="margin: 0 0 0.5rem 0;">Total Expenses</h4>
+        <p style="font-weight: bold; color: var(--xp-accent);">${money(budget.total_expenses)}</p>
+      </div>
+      <div class="card highlight-card">
+        <h4 style="margin: 0 0 0.5rem 0;">Monthly Savings</h4>
+        <p style="font-weight: bold; color: var(--xp-accent);">${money(budget.monthly_savings)}</p>
+      </div>
+    </div>`;
+
+    if (budgetData.income && budgetData.income.length > 0) {
+      html += `<h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Income Sources</h4>`;
+      budgetData.income.forEach((item) => {
+        html += `<div style="padding: 0.75rem; background: #f5f5f5; border-radius: 6px; margin-bottom: 0.5rem;">
+          <strong>${item.source_name}</strong> - ${money(item.amount)} (${item.frequency})
+        </div>`;
+      });
+    }
+
+    if (budgetData.expenses && budgetData.expenses.length > 0) {
+      html += `<h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Expenses</h4>`;
+      budgetData.expenses.forEach((item) => {
+        html += `<div style="padding: 0.75rem; background: #f5f5f5; border-radius: 6px; margin-bottom: 0.5rem;">
+          <strong>${item.category}</strong> - ${money(item.amount)} (${item.frequency})
+        </div>`;
+      });
+    }
+
+    content.innerHTML = html;
+    modal.style.display = 'block';
+  } catch (err) {
+    alert('Error loading budget: ' + err.message);
+  }
+}
+
+function closeBudgetModal() {
+  $('#budgetModal').style.display = 'none';
+}
 
 loadDashboard().catch((err) => {
   console.error(err);

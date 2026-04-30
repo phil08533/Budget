@@ -156,6 +156,16 @@ if (!isset($_SESSION['user_id'])) {
           <p id="yearlyTotal">$0.00</p>
           <small>Yearly total</small>
         </article>
+        <article class="card">
+          <h3>Total Monthly Savings Goals</h3>
+          <p id="overviewMonthlySavings">$0.00</p>
+          <small>All savings goals</small>
+        </article>
+        <article class="card highlight-card">
+          <h3>Annual Savings</h3>
+          <p id="overviewAnnualSavings">$0.00</p>
+          <small>Yearly savings with gains</small>
+        </article>
       </div>
 
     </section>
@@ -319,6 +329,15 @@ if (!isset($_SESSION['user_id'])) {
       <div class="history" id="budgetList"></div>
     </section>
   </main>
+
+  <!-- BUDGET DETAIL MODAL -->
+  <div id="budgetModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; overflow: auto;">
+    <div style="background: white; margin: 50px auto; padding: 30px; border-radius: 12px; max-width: 600px; position: relative;">
+      <button onclick="closeBudgetModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+      <h2 id="budgetModalTitle">Budget Details</h2>
+      <div id="budgetModalContent"></div>
+    </div>
+  </div>
 
   <!-- HELP TOOLTIP -->
   <div id="helpTooltip" class="tooltip" style="display: none;"></div>
