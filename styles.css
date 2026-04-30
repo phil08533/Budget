@@ -78,15 +78,15 @@
 
 /* Dark Gradient Theme */
 :root[data-theme="dark"] {
-  --xp-bg: #1a1a2e;
-  --xp-panel: #16213e;
-  --xp-text: #e0e0e0;
-  --xp-border: #0f3460;
-  --xp-border-light: #2a3f5f;
+  --xp-bg: #0f0f1e;
+  --xp-panel: #1a1a2e;
+  --xp-text: #e8e8f0;
+  --xp-border: #2a2a4e;
+  --xp-border-light: #3a3a5e;
   --xp-accent: #00d4ff;
   --xp-accent-light: #00f0ff;
-  --xp-gradient-start: #0f1c3f;
-  --xp-gradient-end: #16213e;
+  --xp-gradient-start: #0f0f1e;
+  --xp-gradient-end: #1a1a3e;
 }
 
 /* Default fallback */

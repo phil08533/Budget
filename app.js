@@ -19,6 +19,70 @@ function changeTheme(theme) {
   }
 }
 
+function calculateRunway() {
+  const savingsInput = document.getElementById('currentSavings');
+  const savings = parseFloat(savingsInput.value) || 0;
+
+  // Get current monthly expenses from the dashboard
+  const expenseText = document.getElementById('expenseTotal').textContent;
+  const monthlyExpenses = parseFloat(expenseText.replace('$', '').replace(/,/g, '')) || 0;
+
+  const resultsDiv = document.getElementById('runwayResults');
+
+  if (savings <= 0) {
+    resultsDiv.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Enter your current savings to calculate your financial runway</p>';
+    return;
+  }
+
+  if (monthlyExpenses <= 0) {
+    resultsDiv.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Add some expenses first to calculate your runway</p>';
+    return;
+  }
+
+  const months = Math.floor(savings / monthlyExpenses);
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+  const weeks = Math.floor((savings % monthlyExpenses) / (monthlyExpenses / 4.33));
+
+  let timeText = '';
+  if (years > 0) {
+    timeText = `${years} year${years > 1 ? 's' : ''} and ${remainingMonths} month${remainingMonths !== 1 ? 's' : ''}`;
+  } else if (months > 0) {
+    timeText = `${months} month${months !== 1 ? 's' : ''} and ${weeks} week${weeks !== 1 ? 's' : ''}`;
+  } else {
+    const days = Math.floor((savings / monthlyExpenses) * 30);
+    timeText = `${days} day${days !== 1 ? 's' : ''}`;
+  }
+
+  resultsDiv.innerHTML = `
+    <div class="cards">
+      <article class="card highlight-card">
+        <h3>Financial Runway</h3>
+        <p style="font-size: 1.8rem;">${timeText}</p>
+        <small style="color: #999;">How long you can live off your current savings</small>
+      </article>
+      <article class="card highlight-card">
+        <h3>Monthly Burn Rate</h3>
+        <p style="font-size: 1.8rem;">$${monthlyExpenses.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+        <small style="color: #999;">Your current monthly expenses</small>
+      </article>
+      <article class="card">
+        <h3>Savings Left</h3>
+        <p style="font-size: 1.8rem;">$${savings.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+        <small style="color: #999;">Your current savings balance</small>
+      </article>
+    </div>
+
+    <div style="background: linear-gradient(135deg, rgba(0, 82, 204, 0.1) 0%, rgba(19, 102, 230, 0.1) 100%); border: 1px solid var(--xp-border); border-radius: 8px; padding: 20px; margin-top: 20px;">
+      <h4 style="margin: 0 0 10px 0; color: var(--xp-accent);">💡 What This Means</h4>
+      <p style="margin: 0; color: #666; line-height: 1.6;">
+        If you stop earning money today and only spend on your current expenses, you have approximately <strong>${months} months</strong> of financial security.
+        This is your emergency fund runway. To increase it, either increase your monthly savings or reduce your expenses.
+      </p>
+    </div>
+  `;
+}
+
 function money(value) {
   return `$${Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }

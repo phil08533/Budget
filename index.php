@@ -96,7 +96,25 @@ if (!isset($_SESSION['user_id'])) {
       </div>
     </section>
 
-    <!-- BUDGET BREAKDOWN -->
+    <!-- CURRENT SAVINGS & RUNWAY -->
+    <section>
+      <h2>💾 Your Financial Runway <span class="help-icon" title="How long can you live off your savings?">?</span></h2>
+      <p style="color: #666; margin: 0 0 1.5rem 0; font-size: 0.95rem;">Enter your current savings to see how many months you can survive on them if you stop earning money.</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px;">
+        <div>
+          <label>
+            <small style="color: var(--xp-accent); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;">Current Savings Balance ($)</small>
+            <input type="number" id="currentSavings" step="0.01" placeholder="0.00" value="0" style="padding: 12px; border: 1px solid var(--xp-border); border-radius: 6px; font-size: 0.95rem;" onchange="calculateRunway()" oninput="calculateRunway()" />
+          </label>
+        </div>
+        <div style="display: flex; align-items: flex-end;">
+          <button class="btn" type="button" onclick="calculateRunway()" style="width: 100%; padding: 12px;">Calculate Runway</button>
+        </div>
+      </div>
+
+      <div id="runwayResults"></div>
+    </section>
     <section>
       <h2>📈 Budget Breakdown <span class="help-icon" title="See your income and expenses organized by frequency">?</span></h2>
       <div class="grid-2">
